@@ -9,8 +9,6 @@ use App\Core\App;
 use App\Core\Database\QueryBuilder;
 use App\Core\Database\Connection;
 
-require 'Helpers.php';
-
 $config_file = 'config.php';
 if (!file_exists($config_file)) {
     die("The [config.php] not found.");
