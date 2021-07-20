@@ -159,7 +159,7 @@ class Request
 			$token = Request::token(10);
 
 			$subject = "Sprnva password reset link";
-			$emailTemplate = file_get_contents('system/Email/stubs/email.stubs');
+			$emailTemplate = file_get_contents('vendor/sprnva/framework/src/Email/stubs/email.stubs');
 
 			$app_name = ["{{app_name}}", "{{username}}", "{{link_token}}", "{{year}}"];
 			$values = [
