@@ -201,6 +201,8 @@ class Request
 	 */
 	public static function csrf_token()
 	{
+		$token = "";
+
 		if (!isset($_SESSION["_sprnva_token_"])) {
 			$_SESSION["_sprnva_token_"] = Request::token(10);
 		} else {
