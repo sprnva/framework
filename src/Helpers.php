@@ -39,11 +39,11 @@ function packageView($path, $data = [])
 {
     extract($data);
 
-    if (!file_exists("system/{$path}.view.php")) {
+    if (!file_exists("vendor/sprnva/framework/src/{$path}.view.php")) {
         throwException("A package view [{$path}] not found", new Exception());
     }
 
-    return require "system/{$path}.view.php";
+    return require "vendor/sprnva/framework/src/{$path}.view.php";
 }
 
 /**
@@ -337,7 +337,7 @@ if (!function_exists('abort')) {
             'message' => ($message == "") ? error_page($code) : $message
         ];
         extract($data);
-        return require "system/Error.php";
+        return require "vendor/sprnva/framework/src/Error.php";
         die();
     }
 }
