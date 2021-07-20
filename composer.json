@@ -1,0 +1,16 @@
+{
+    "name": "sprnva/framework",
+    "description": "The Sprnva Framework.",
+    "keywords": [
+        "framework",
+        "sprnva"
+    ],
+    "authors": [
+        {
+            "name": "Judywen Guapin",
+            "email": "jguapin21@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
