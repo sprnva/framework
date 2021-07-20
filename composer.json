@@ -14,7 +14,8 @@
     "autoload": {
         "files": [
             "src/bootstrap.php",
-            "src/Helpers.php"
+            "src/Helpers.php",
+            "src/Routes.php"
         ]
     },
     "minimum-stability": "dev",
