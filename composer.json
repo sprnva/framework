@@ -11,6 +11,11 @@
             "email": "jguapin21@gmail.com"
         }
     ],
+    "autoload": {
+        "files": [
+            "src/Helpers.php"
+        ]
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
