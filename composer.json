@@ -5,6 +5,7 @@
         "framework",
         "sprnva"
     ],
+    "license": "MIT",
     "authors": [
         {
             "name": "Judywen Guapin",
