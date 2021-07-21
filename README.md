@@ -1,4 +1,5 @@
-# Sprnva /supernova/
+# Sprnva Framework
+### /supernova/
 Sprnva is a beautifully designed application starter kit for you and provides the perfect starting point for your next application. Sprnva provides the entry point in learning the MVC framework.
 <br><br>
 docs: http://sprnva.000webhostapp.com/
@@ -29,24 +30,23 @@ Sprnva is designed using bootstrap 4 and offers your choice of using different s
 - Csrf protection
 - database seeder
 - brightens your horizon in future engagement for massive frameworks
----
+
 ## REQUIREMENTS
 - Php version supported: PHP >= php5.5
 - composer
----
+- apache and mysql server
+
 ## INSTALLATION
-- Download sprnva repo as zip or clone it to your local machine
-- Open your application directory in the terminal/cmd and execute this
 ```bash
-$ composer dump-autoload
-```
-- duplicate the config.example.php and rename the duplicated one to config.php . After that open config.php and then change it to your credentials.
-- base_url :: This plays the important role in this setup because it's used if your application is inside a folder in a domain like example.com/sprnva/login instead use 'base_url' => '' if your application is in the root directory of a domain like example.com/login
-- mysql_path :: For more flexible database migration please indicate the path of mysql in your machine including the trailing slashes.
-- Environment :: this is to identify if your app is for development only or for production. Some modules may not work in production due to security reasons.
-- Create a database identical to your config then go to /migration to your URL
-```
-$ http://localhost/sprnva/migration
+composer create-projct sprnva/sprnva example-app
+
+cd example-app
 ```
 
-#### Now you are in the database migration page, click the "Fresh" button to generate default tables and start adding users. You can now run your application in your browser as easy as that.
+- setup `config.php` credentials
+- Create a database identical to your config then go to  `/migration`module with this URL:
+```
+http://localhost/sprnva/migration
+```
+- click fresh button to migrate default tables
+- You can start building your application
