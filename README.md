@@ -38,7 +38,7 @@ Sprnva is designed using bootstrap 4 and offers your choice of using different s
 
 ## INSTALLATION
 ```bash
-composer create-projct sprnva/sprnva example-app
+composer create-project sprnva/sprnva example-app
 
 cd example-app
 ```
