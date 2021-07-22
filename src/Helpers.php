@@ -446,5 +446,15 @@ function checkHash($value, $hashedValue)
     return $bcryptHaser->check($value, $hashedValue);
 }
 
+/**
+ * Check if authentication scaffolding is present
+ * 
+ * @return bool
+ */
+function fortified()
+{
+    return file_exists('vendor/sprnva/fortify');
+}
+
 // add additional helper functions from the users
 require __DIR__ . '/../../../../config/function.helpers.php';
