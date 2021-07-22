@@ -25,7 +25,7 @@ App::bind(
         : App::get('config')['app']['base_url']
 );
 
-if (isset(App::get('config')['database']['name'])) {
+if (App::get('config')['database']['name'] != '') {
     App::bind('database', new QueryBuilder(
         Connection::make(App::get('config')['database'])
     ));
