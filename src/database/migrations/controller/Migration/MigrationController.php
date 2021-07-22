@@ -18,7 +18,7 @@ class MigrationController
 
 		$pageTitle = "Migration";
 
-		return packageView('database/migrations/views/index', compact('pageTitle'));
+		return packageView('framework/src/database/migrations/views/index', compact('pageTitle'));
 	}
 
 	public function run()

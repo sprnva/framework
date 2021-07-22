@@ -210,7 +210,7 @@ function randChar($length = 6)
  */
 function throwException($message, $exeption = '')
 {
-    packageView('Exceptions/exception', compact('message', 'exeption'));
+    packageView('framework/src/Exceptions/exception', compact('message', 'exeption'));
     exit();
 }
 
