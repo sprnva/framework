@@ -39,11 +39,11 @@ function packageView($path, $data = [])
 {
     extract($data);
 
-    if (!file_exists("vendor/sprnva/framework/src/{$path}.view.php")) {
+    if (!file_exists("vendor/sprnva/{$path}.view.php")) {
         throwException("A package view [{$path}] not found", new Exception());
     }
 
-    return require "vendor/sprnva/framework/src/{$path}.view.php";
+    return require "vendor/sprnva/{$path}.view.php";
 }
 
 /**
