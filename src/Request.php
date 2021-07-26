@@ -277,7 +277,7 @@ class Request
 	 * @param  bool  $lock
 	 * @return int|bool
 	 */
-	public static function storeAs($file_tmp, $temp_dir, $type, $folder, $filename)
+	public static function storeAs($file_tmp, $temp_dir, $type, $filename, $folder = '')
 	{
 		Filesystem::noMemoryLimit();
 
