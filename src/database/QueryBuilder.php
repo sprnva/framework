@@ -157,6 +157,60 @@ class QueryBuilder
 	}
 
 	/**
+	 * this will count rows in a foreign table
+	 * 
+	 */
+	public function withCount($params = [])
+	{
+		$currentTableDatas = $this->result;
+
+		$collectedIdFrom = [];
+		foreach ($params as $relationTable => $param) {
+			$foreignIdFromCurrentTable = [];
+			foreach ($currentTableDatas as $key => $currentTableData) {
+				if (is_array($currentTableData)) {
+					$foreignIdFromCurrentTable[] = $currentTableData[$param[0]];
+				} else {
+					$foreignIdFromCurrentTable[] = $currentTableDatas[$param[0]];
+				}
+			}
+
+			$collectedIdFrom[$relationTable] = $foreignIdFromCurrentTable;
+		}
+
+		$relationDatas = [];
+		foreach ($params as $relationTable => $primaryColumn) {
+			$relationPrimaryColumn = $primaryColumn[1];
+			$implodedIds = implode("','", array_unique($collectedIdFrom[$relationTable]));
+
+			$andFilter = $this->withFilter[$relationTable];
+
+			$statement = $this->pdo->prepare("SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`");
+			$statement->execute();
+
+			$this->listen[] = "SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`";
+
+			$relationDatas[$relationTable] = $statement->fetchAll(PDO::FETCH_ASSOC);
+		}
+
+		$newResultSet = [];
+		foreach ($currentTableDatas as $currentTableData) {
+			foreach ($params as $relationTable => $primaryColumn) {
+				foreach ($relationDatas[$relationTable] as $relationData) {
+					if ($currentTableData[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
+						$currentTableData[$relationTable . '_count'] = $relationData[$relationTable . '_count'];
+					}
+				}
+			}
+
+			$newResultSet[] = $currentTableData;
+		}
+
+		$this->result = $newResultSet;
+		return $this;
+	}
+
+	/**
 	 * add extra where params to the with() mwthod
 	 * 
 	 */
