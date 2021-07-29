@@ -170,9 +170,24 @@ class Route
 		static::$currentGroupMiddleware = $previousGroupMiddleware;
 	}
 
+	/**
+	 * Register routes to collection
+	 *
+	 * @param string $uri
+	 * @param string $requestType
+	 */
 	public static function register($uri, $requestType)
 	{
 		$self = new static;
 		$self->routeBinder->direct($uri, $requestType);
+	}
+
+	/**
+	 * get a list of routes in the collection
+	 *
+	 */
+	public static function list()
+	{
+		return static::$routes;
 	}
 }

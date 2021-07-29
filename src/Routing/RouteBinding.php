@@ -23,9 +23,6 @@ class RouteBinding
      */
     public function direct($uri, $requestType)
     {
-
-        // dd($this->routes[$requestType]);
-
         Auth::routeGuardian($this->routes[$requestType][$uri]['middleware']);
 
         if (array_key_exists($uri, $this->routes[$requestType])) {
