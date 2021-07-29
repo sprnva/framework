@@ -72,6 +72,20 @@ class Request
 
 						break;
 
+					case 'unique':
+
+						$table = $type[1];
+						if ($table != "") {
+
+							$response = DB()->select("count(*) as '{$table}_count'", $type[1], "{$key} in('$_REQUEST[$key]')")->get();
+
+							if ($response["{$table}_count"] > 0) {
+								$errorList[] = "&bull; {$key} already exist in database.";
+							}
+						}
+
+						break;
+
 					default:
 						break;
 				}

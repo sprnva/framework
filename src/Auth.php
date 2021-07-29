@@ -57,12 +57,14 @@ class Auth
      * This will protect the routes if not authenticated
      * 
      */
-    public static function routeGuardian($middleware)
+    public static function routeGuardian($middlewares)
     {
-        if (!empty($middleware)) {
-            if (in_array('auth', $middleware)) {
-                if (empty(static::user('id'))) {
-                    redirect('/login');
+        if (!empty($middlewares)) {
+            foreach ($middlewares as $middleware) {
+                if ($middleware == "auth") {
+                    if (empty(static::user('id'))) {
+                        redirect('/login');
+                    }
                 }
             }
         }

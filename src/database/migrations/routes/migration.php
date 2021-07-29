@@ -1,5 +1,6 @@
 <?php
 
+use App\Core\Routing\Route;
 // routes for database migration
-$router->get('/migration', ['MigrationController@index']);
-$router->post('/migrate-run', ['MigrationController@run']);
+Route::get('/migration', ['MigrationController@index']);
+Route::post('/migrate-run', ['MigrationController@run']);
