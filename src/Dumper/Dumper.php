@@ -51,7 +51,17 @@ class Dumper
                 if (is_callable($value)) {
                     $data .= "\"<span class='data-color'>{$key}</span>\" => \"<span class='data-color'>callable()</span>\"<br>";
                 } else {
-                    $data .= "\"<span class='data-color'>{$key}</span>\" => \"<span class='data-color'>{$value}</span>\"<br>";
+                    if (is_object($value)) {
+                        $numberOfOject = count((array)$value);
+                        if ($numberOfOject < 1) {
+                            $data .= "\"<span class='data-color'>{$key}</span>\" => []<br>";
+                        } else {
+                            $data .= "\"<span class='data-color'>{$key}</span>\" => <span class='array_color'>object:{$numberOfOject}</span> [<span class='drpDwn'" . $counterTest . ">&#9658;</span>";
+                            $data .= static::dumpChild($value);
+                        }
+                    } else {
+                        $data .= "\"<span class='data-color'>{$key}</span>\" => \"<span class='data-color'>{$value}</span>\"<br>";
+                    }
                 }
             }
 
