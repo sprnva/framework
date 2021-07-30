@@ -21,9 +21,22 @@ class Dumper
                 }
                 $data .= "</div>";
             } else {
-                $data .= "<div class='collections'>";
-                $data .= "\"<span class='data-color'>{$x}</span>\"<br>";
-                $data .= "</div>";
+                if (is_object($x)) {
+                    $countArray = count((array)$x);
+                    $data .= "<div class='collections'>";
+                    $theObject = get_class($x);
+                    if ($countArray < 1) {
+                        $data .= "<span class='array_color'>object({$theObject}):{$countArray}</span> []";
+                    } else {
+                        $data .= "<span class='array_color'>object({$theObject}):{$countArray}</span> [<span class='drpDwn'></span>";
+                        $data .= static::dumpChild($x);
+                    }
+                    $data .= "</div>";
+                } else {
+                    $data .= "<div class='collections'>";
+                    $data .= "\"<span class='data-color'>{$x}</span>\"<br>";
+                    $data .= "</div>";
+                }
             }
         }
 
@@ -53,10 +66,11 @@ class Dumper
                 } else {
                     if (is_object($value)) {
                         $numberOfOject = count((array)$value);
+                        $theObject = get_class($value);
                         if ($numberOfOject < 1) {
                             $data .= "\"<span class='data-color'>{$key}</span>\" => []<br>";
                         } else {
-                            $data .= "\"<span class='data-color'>{$key}</span>\" => <span class='array_color'>object:{$numberOfOject}</span> [<span class='drpDwn'" . $counterTest . ">&#9658;</span>";
+                            $data .= "\"<span class='data-color'>{$key}</span>\" => <span class='array_color'>object({$theObject}):{$numberOfOject}</span> [<span class='drpDwn'" . $counterTest . ">&#9658;</span>";
                             $data .= static::dumpChild($value);
                         }
                     } else {
