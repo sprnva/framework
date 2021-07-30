@@ -186,7 +186,7 @@ class Route
 	 * get a list of routes in the collection
 	 *
 	 */
-	public static function list()
+	public static function uriCollection()
 	{
 		return static::$routes;
 	}
