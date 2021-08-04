@@ -15,8 +15,9 @@ return [
 		'base_url' => $config["base_url"],
 		'name' => $config["app_name"],
 
-		// choices: windows, macOS, linux
-		'os' => $config["os"],
+		// for more flexible database migration please indicate 
+		// the path of mysql in your machine including the trailing slashes.
+		'mysql_path' => $config["mysql_path"],
 
 		// choices: development, production
 		'environment' => $config["environment"],
