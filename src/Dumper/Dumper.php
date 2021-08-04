@@ -26,9 +26,9 @@ class Dumper
                     $data .= "<div class='collections'>";
                     $theObject = get_class($x);
                     if ($countArray < 1) {
-                        $data .= "<span class='array_color'>object({$theObject}):{$countArray}</span> []";
+                        $data .= "<span class='array_color'>{$theObject}</span> []";
                     } else {
-                        $data .= "<span class='array_color'>object({$theObject}):{$countArray}</span> [<span class='drpDwn'></span>";
+                        $data .= "<span class='array_color'>{$theObject}</span> [<span class='drpDwn'></span>";
                         $data .= static::dumpChild($x);
                     }
                     $data .= "</div>";
@@ -70,7 +70,7 @@ class Dumper
                         if ($numberOfOject < 1) {
                             $data .= "\"<span class='data-color'>{$key}</span>\" => []<br>";
                         } else {
-                            $data .= "\"<span class='data-color'>{$key}</span>\" => <span class='array_color'>object({$theObject}):{$numberOfOject}</span> [<span class='drpDwn'" . $counterTest . ">&#9658;</span>";
+                            $data .= "\"<span class='data-color'>{$key}</span>\" => <span class='array_color'>{$theObject}</span> [<span class='drpDwn'" . $counterTest . ">&#9658;</span>";
                             $data .= static::dumpChild($value);
                         }
                     } else {
