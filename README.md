@@ -2,7 +2,7 @@
 ### /supernova/
 Sprnva is a beautifully designed application starter kit for you and provides the perfect starting point for your next application. Sprnva provides the entry point in learning the MVC framework.
 <br><br>
-docs: http://sprnva.000webhostapp.com/
+docs: http://docs.sprnva.space
 <br>
 Sprnva is designed using bootstrap 4 and offers your choice of using different stacks.
 ![image](https://user-images.githubusercontent.com/37282871/125870550-4bb3426e-a542-47cd-bdae-821c677ac489.png)
@@ -44,6 +44,7 @@ cd example-app
 ```
 
 - setup `config.php` credentials
+- set `'base_url' => 'example-app'` *('example-app' is the directory name of your application)*
 - Create a database identical to your config then go to  `/migration`module with this URL:
 ```
 http://localhost/sprnva/migration
