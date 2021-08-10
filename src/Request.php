@@ -45,7 +45,7 @@ class Request
 
 				switch ($type[0]) {
 					case 'required':
-						if (empty($_REQUEST[$key])) {
+						if ($_REQUEST[$key] == "") {
 							$errorList[] = "&bull; {$key} is {$type[0]} but has no value.";
 						}
 
@@ -113,7 +113,8 @@ class Request
 
 					case 'boolean':
 
-						if ($type[1] != true || $type[1] != false || $type[1] != 1 || $type[1] != 0 || $type[1] != "1" || $type[1] != "0") {
+						$bool = ['true', 'false', '1', '0'];
+						if (!in_array($_REQUEST[$key], $bool)) {
 							$errorList[] = "&bull; {$key} is not a boolean.";
 						}
 
