@@ -111,6 +111,14 @@ class Request
 
 						break;
 
+					case 'boolean':
+
+						if ($type[1] != true || $type[1] != false || $type[1] != 1 || $type[1] != 0 || $type[1] != "1" || $type[1] != "0") {
+							$errorList[] = "&bull; {$key} is not a boolean.";
+						}
+
+						break;
+
 					default:
 						break;
 				}
