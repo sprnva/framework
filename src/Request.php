@@ -74,10 +74,35 @@ class Request
 
 					case 'unique':
 
-						$table = $type[1];
+						$param = explode(",", $type[1]);
+						$table = $param[0];
 						if ($table != "") {
 
-							$response = DB()->select("count(*) as '{$table}_count'", $type[1], "{$key} in('$_REQUEST[$key]')")->get();
+							$column = $param[1];
+							$except = $param[2];
+							$idColumn = $param[3];
+
+							// if unique:{table}
+							if (empty($column) && empty($except) && empty($idColumn)) {
+								$newColumn = $key;
+								$query = "`{$newColumn}` = '$_REQUEST[$key]'";
+							}
+
+							// if unique:{table},{exept},{id}
+							if (empty($idColumn) && !empty($column) && !empty($except)) {
+
+								$newExcept = $column;
+								$newIdColumn = $except;
+
+								$query = "`{$key}` = '$_REQUEST[$key]' AND `{$newExcept}` != '{$newIdColumn}'";
+							}
+
+							// if unique:{table},{column},{exept},{id}
+							if (!empty($column) && !empty($except) && !empty($idColumn)) {
+								$query = "`{$column}` = '$_REQUEST[$key]' AND `{$except}` != '{$idColumn}'";
+							}
+
+							$response = DB()->select("count(*) as '{$table}_count'", $param[0], $query)->get();
 
 							if ($response["{$table}_count"] > 0) {
 								$errorList[] = "&bull; {$key} already exist in database.";
