@@ -88,6 +88,12 @@ class Request
 								$query = "`{$newColumn}` = '$_REQUEST[$key]'";
 							}
 
+							// if unique:{table},{column}
+							if (!empty($column) && empty($except) && empty($idColumn)) {
+								$newColumn = $column;
+								$query = "`{$newColumn}` = '$_REQUEST[$key]'";
+							}
+
 							// if unique:{table},{exept},{id}
 							if (empty($idColumn) && !empty($column) && !empty($except)) {
 
