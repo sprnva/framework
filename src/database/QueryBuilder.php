@@ -132,10 +132,15 @@ class QueryBuilder
 		$newResultSet = [];
 		foreach ($currentTableDatas as $currentTableData) {
 			foreach ($params as $relationTable => $primaryColumn) {
+				$countRelationData = count($relationDatas[$relationTable]);
 				foreach ($relationDatas[$relationTable] as $key => $relationData) {
 					if (is_array($currentTableData)) {
 						if ($currentTableData[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
-							$currentTableData[$relationTable] = $relationData;
+							if ($countRelationData > 1) {
+								$currentTableData[$relationTable][] = $relationData;
+							} else {
+								$currentTableData[$relationTable] = $relationData;
+							}
 						}
 					} else {
 						if ($currentTableDatas[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
