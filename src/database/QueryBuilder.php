@@ -145,7 +145,7 @@ class QueryBuilder
 					} else {
 						if ($currentTableDatas[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
 							if ($countRelationData > 1) {
-								$currentTableDatas[$relationTable][] = $relationData;
+								$currentTableDatas[$relationTable] = $relationDatas[$relationTable];
 							} else {
 								$currentTableDatas[$relationTable] = $relationData;
 							}
