@@ -144,7 +144,11 @@ class QueryBuilder
 						}
 					} else {
 						if ($currentTableDatas[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
-							$currentTableDatas[$relationTable] = $relationData;
+							if ($countRelationData > 1) {
+								$currentTableDatas[$relationTable][] = $relationData;
+							} else {
+								$currentTableDatas[$relationTable] = $relationData;
+							}
 						}
 					}
 				}
