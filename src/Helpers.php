@@ -13,6 +13,16 @@ use PHPMailer\PHPMailer\Exception;
 Request::csrf_token();
 
 /**
+ * The Sprnva framework version.
+ *
+ * @var string
+ */
+function appversion()
+{
+    return "1.3.23";
+}
+
+/**
  * Require a view.
  *
  * @param  string $name
