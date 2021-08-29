@@ -9,6 +9,8 @@ class SchemaFactory
 	public function __construct($schemaName = '', $schemaPath = '', $migration_table = '')
 	{
 		$this->schemaFilePath = $schemaPath . $schemaName;
+		$this->OSExtension = (PHP_OS === "WINNT") ? '.exe' : '';
+		$this->mysqldump = "\mysqldump" . $this->OSExtension;
 		$this->mysqlPath = App::get('config')['app']['mysql_path'];
 
 		// database engine
@@ -233,7 +235,7 @@ class SchemaFactory
 	 */
 	public function sqlDumpNodata()
 	{
-		return $this->mysqlPath . "mysqldump " . $this->optionDump() . " " . $this->conn() . " " . $this->database . " --routines " . $this->resultFile() . " --no-data";
+		return $this->mysqlPath . $this->mysqldump . " " . $this->optionDump() . " " . $this->conn() . " " . $this->database . " --routines " . $this->resultFile() . " --no-data";
 	}
 
 	/**
@@ -244,6 +246,6 @@ class SchemaFactory
 	 */
 	public function sqlDump()
 	{
-		return $this->mysqlPath . "mysqldump " . $this->optionDump() . " " . $this->conn() . " --no-create-info --skip-triggers " . $this->database . " " . $this->migration_table . " >> " . $this->schemaFilePath;
+		return $this->mysqlPath . $this->mysqldump . " " . $this->optionDump() . " " . $this->conn() . " --no-create-info --skip-triggers " . $this->database . " " . $this->migration_table . " >> " . $this->schemaFilePath;
 	}
 }

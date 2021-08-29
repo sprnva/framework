@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Core\Database;
+namespace App\Core\Database\Connection;
 
 use PDO;
 use PDOException;
+use App\Core\Database\Connection\Exception\ConnectionException;
 
-class Connection
+class Connection implements ConnectionInterface
 {
 	/**
 	 * Create a new PDO connection.
@@ -21,8 +22,8 @@ class Connection
 				$config['password'],
 				$config['options']
 			);
-		} catch (PDOException $e) {
-			die($e->getMessage());
+		} catch (PDOException $expection) {
+			throw new ConnectionException($expection->getMessage(), $expection);
 		}
 	}
 }

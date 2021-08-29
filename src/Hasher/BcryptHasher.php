@@ -3,6 +3,7 @@
 namespace App\Core;
 
 use RuntimeException;
+use App\Core\Hasher\Exception\BcryptHasherException;
 
 class BcryptHasher
 {
@@ -48,7 +49,7 @@ class BcryptHasher
         ]);
 
         if ($hash === false) {
-            throw new RuntimeException('Bcrypt hashing not supported.');
+            throw new BcryptHasherException('Bcrypt hashing not supported.', new RuntimeException());
         }
 
         return $hash;
@@ -67,7 +68,7 @@ class BcryptHasher
     public function check($value, $hashedValue, array $options = [])
     {
         if ($this->verifyAlgorithm && $this->info($hashedValue)['algoName'] !== 'bcrypt') {
-            throw new RuntimeException('This password does not use the Bcrypt algorithm.');
+            throw new BcryptHasherException('This password does not use the Bcrypt algorithm.', new RuntimeException());
         }
 
         return $this->checkHash($value, $hashedValue, $options);

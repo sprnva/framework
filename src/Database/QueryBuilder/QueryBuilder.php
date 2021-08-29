@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Core\Database;
+namespace App\Core\Database\QueryBuilder;
 
 use PDO;
 use Exception;
 use App\Core\Filesystem;
+use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
 
-class QueryBuilder
+class QueryBuilder implements QueryBuilderInterface
 {
 	/**
 	 * The PDO instance.
@@ -60,7 +61,7 @@ class QueryBuilder
 			$this->result = $statement->fetch(PDO::FETCH_ASSOC);
 			return $this;
 		} catch (Exception $e) {
-			throwException("Whoops! error occurred.", $e);
+			throw new QueryBuilderException("Whoops! error occurred.", $e);
 		}
 	}
 
@@ -79,7 +80,7 @@ class QueryBuilder
 			$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
 			return $this;
 		} catch (Exception $e) {
-			throwException("Whoops! error occurred.", $e);
+			throw new QueryBuilderException("Whoops! error occurred.", $e);
 		}
 	}
 
@@ -271,7 +272,7 @@ class QueryBuilder
 				}
 			}
 		} catch (Exception $e) {
-			throwException("Whoops! error occurred.", $e);
+			throw new QueryBuilderException("Whoops! error occurred.", $e);
 		}
 	}
 
@@ -312,7 +313,7 @@ class QueryBuilder
 				return 0;
 			}
 		} catch (Exception $e) {
-			throwException("Whoops! error occurred.", $e);
+			throw new QueryBuilderException("Whoops! error occurred.", $e);
 		}
 	}
 
@@ -347,7 +348,7 @@ class QueryBuilder
 				return 0;
 			}
 		} catch (Exception $e) {
-			throwException("Whoops! error occurred.", $e);
+			throw new QueryBuilderException("Whoops! error occurred.", $e);
 		}
 	}
 
@@ -376,7 +377,7 @@ class QueryBuilder
 				}
 			}
 		} catch (Exception $e) {
-			throwException("Whoops! error occurred.", $e);
+			throw new QueryBuilderException("Whoops! error occurred.", $e);
 		}
 	}
 

@@ -4,6 +4,7 @@ namespace App\Core\Routing;
 
 use App\Core\Auth;
 use Exception;
+use App\Core\Routing\Exception\RoutingException;
 
 class RouteBinding
 {
@@ -57,7 +58,7 @@ class RouteBinding
             }
         }
 
-        throwException("No route defined for [{$uri}]", new Exception());
+        throw new RoutingException("No route defined for [{$uri}]", new Exception());
     }
 
     /**
@@ -71,15 +72,14 @@ class RouteBinding
         $param_array = array_filter($paramerters, 'is_int', ARRAY_FILTER_USE_KEY);
 
         if (class_exists($controller)) {
-            throwException("Controller [{$controller}] already exist.", new Exception());
+            throw new RoutingException("Controller [{$controller}] already exist.", new Exception());
         }
 
         $useController = "App\\Controllers\\{$controller}";
         $controllerClass = new $useController;
 
         if (!method_exists($controllerClass, $action)) {
-
-            throwException("{$controller} does not respond to the [{$action}] action.", new Exception());
+            throw new RoutingException("{$controller} does not respond to the [{$action}] action.", new Exception());
         }
 
         if (!empty($param_array)) {

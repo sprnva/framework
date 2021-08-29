@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\Exception\AppException;
 use Exception;
 
 /**
@@ -9,7 +10,7 @@ use Exception;
  * 
  */
 
-class App
+class App implements AppInterface
 {
     /**
      * All registered keys.
@@ -37,7 +38,7 @@ class App
     public static function get($key)
     {
         if (!array_key_exists($key, static::$registry)) {
-            throwException("No [{$key}] is bound in the App container.", new Exception());
+            throw new AppException("No [{$key}] is bound in the App container.", new Exception());
         }
 
         return static::$registry[$key];

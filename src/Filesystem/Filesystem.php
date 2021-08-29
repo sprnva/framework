@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Filesystem;
 
 use App\Core\App;
 use Exception;
 use FilesystemIterator;
+use App\Core\Filesystem\Exception\FilesystemException;
 
-class Filesystem
+class Filesystem implements FilesystemInterface
 {
     /**
      * Determine if a file or directory exists.
@@ -194,7 +195,7 @@ class Filesystem
 
     public function copyDirectory($directory, $destination, $options = '')
     {
-        if (! $this->isDirectory($directory)) {
+        if (!$this->isDirectory($directory)) {
             return false;
         }
 
@@ -210,12 +211,12 @@ class Filesystem
             // As we spin through items, we will check to see if the current file is actually
             // a directory or a file. When it is actually a directory we will need to call
             // back into this function recursively to keep copying these nested folders.
-            $target = $destination.'/'.$item->getBasename().$options;
+            $target = $destination . '/' . $item->getBasename() . $options;
 
             if ($item->isDir()) {
                 $path = $item->getPathname();
 
-                if (! $this->copyDirectory($path, $target, $options)) {
+                if (!$this->copyDirectory($path, $target, $options)) {
                     return false;
                 }
             }
@@ -224,7 +225,7 @@ class Filesystem
             // location and keep looping. If for some reason the copy fails we'll bail out
             // and return false, so the developer is aware that the copy process failed.
             else {
-                if (! $this->copy($item->getPathname(), $target)) {
+                if (!$this->copy($item->getPathname(), $target)) {
                     return false;
                 }
             }
@@ -243,7 +244,7 @@ class Filesystem
      */
     public function ensureDirectoryExists($path, $mode = 0755, $recursive = true)
     {
-        if (! $this->isDirectory($path)) {
+        if (!$this->isDirectory($path)) {
             $this->makeDirectory($path, $mode, $recursive);
         }
     }

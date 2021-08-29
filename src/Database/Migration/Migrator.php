@@ -10,7 +10,7 @@ class Migrator
 	{
 		$this->migrationFiles = "database/migrations/";
 		$this->schemaFiles = "database/schema/";
-		$this->stubsPath = "vendor/sprnva/framework/src/database/migrations/stubs/";
+		$this->stubsPath = "vendor/sprnva/framework/src/Database/Migration/stubs/";
 		$this->schemaName = "mysql-schema.sql";
 
 		$this->table = "migrations";

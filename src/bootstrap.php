@@ -6,8 +6,8 @@ ini_set('date.timezone', 'Asia/Manila');
 date_default_timezone_set('Asia/Manila');
 
 use App\Core\App;
-use App\Core\Database\QueryBuilder;
-use App\Core\Database\Connection;
+use App\Core\Database\QueryBuilder\QueryBuilder;
+use App\Core\Database\Connection\Connection;
 
 $config_file = 'config.php';
 if (!file_exists($config_file)) {
