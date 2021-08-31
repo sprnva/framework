@@ -16,6 +16,23 @@ class BaseException
 
     public function scaffold($message = null, $exeption = null, $exceptionClass = null)
     {
+        $err_file = $exeption->getFile();
+        $err_line = $exeption->getLine();
+
+        $lineOFfset = $err_line - 15;
+        $lineLength = $err_line + 15;
+
+        $lineTxt = file($err_file);
+        $fileContent = "";
+        for($x=$lineOFfset; $x<$lineLength; $x++) { 
+            if(($err_line - 1) === $x){
+                $fileContent .= "<span style='background-color: green; color: #fff;padding: 2px;'>".$x.$lineTxt[$x]."</span>";
+            }else{
+                $fileContent .= $x.$lineTxt[$x];
+            }
+        }
+        // $fileContent = file_get_contents($err_file, FALSE, NULL, $lineOFfset, $lineLength);
+
         $coat = "";
         $coat .= "<html lang='en'>";
         $coat .= "<head>";
@@ -30,7 +47,7 @@ class BaseException
         $coat .= "<style>";
         $coat .= "body {";
         $coat .= "background-color: #eef1f4;";
-        $coat .= "color: #00096f;";
+        $coat .= "color: #1a4017;";
         $coat .= "}";
         $coat .= "</style>";
         $coat .= "<script src='" . public_url('/assets/sprnva/js/jquery-3.6.0.min.js') . "'></script>";
@@ -39,16 +56,29 @@ class BaseException
         $coat .= "</head>";
         $coat .= "<div class='container'>";
         $coat .= "<div class='row justify-content-md-center'>";
-        $coat .= "<div class='col-md-8'>";
-        $coat .= "<div class='card' style='margin-top: 10%;background-color: #fff; border: 0px; border-radius: 3px; box-shadow: 0 4px 5px 0 rgba(0,0,0,0.2);padding: 10px;'>";
-        $coat .= "<div class='card-body d-flex flex-column'>";
-        $coat .= "<p class='mt-2 mb-0' style='font-size: 18px;font-weight: 500;'>{$message}</p>";
-        $exceptions = ($exceptionClass != null) ? "<b>{$exceptionClass}</b><br>" : "";
-        $coat .= "<small class='text-muted'>{$exceptions}{$exeption}</small>";
-        $coat .= "<small class='text-muted mt-4'>Sprnva blast</small>";
+
+        $coat .= "<div class='col-md-12'>";
+        $coat .= "<div class='card' style='margin-top: 5%;background-color: #fff; border: 2px solid #e1dfdf; border-radius: 3px; padding: 10px;'>";
+        $coat .= "<div class='card-body d-flex flex-column' style='padding: 50px;'>";
+        $coat .= "<p class='text-muted' style='margin: 0px;font-size: 18px;''>{$exceptionClass}</p>";
+        $coat .= "<p class='' style='font-size: 30px;font-weight: 500;'>{$message}</p>";
+        $coat .= "<small class='text-muted' style='font-size: 14px;'>".$_SERVER['REQUEST_URI'] ."</small>";
         $coat .= "</div>";
         $coat .= "</div>";
         $coat .= "</div>";
+
+        $coat .= "<div class='col-md-12'>";
+        $coat .= "<div class='card' style='margin-top: 2%;margin-bottom: 5%;background-color: #fff; border: 2px solid #e1dfdf; border-radius: 3px;'>";
+        $coat .= "<div class='card-header' style='padding: 15px;background-color: #1e4d1a;color: #fff;'>";
+        $coat .= "Sprnva Blast : Stack Trace";
+        $coat .= "</div>";
+        $coat .= "<div class='card-body d-flex flex-column' style='padding: 50px;'>";
+        $coat .= "<p class='text-muted' style='font-size: 18px;font-weight: 300;'><span style='font-weight: 600;'>thrown in</span> {$err_file} <span style='font-weight: 600;'>on line </span>{$err_line}</p>";
+        $coat .= "<pre style='border: 1px solid #ddd;'><code style='color: #20371e;'>{$fileContent}</code></pre>";
+        $coat .= "</div>";
+        $coat .= "</div>";
+        $coat .= "</div>";
+
         $coat .= "</div>";
         $coat .= "</div>";
         $coat .= "</body>";
