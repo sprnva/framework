@@ -14,75 +14,103 @@ class BaseException
         return $this->scaffold($this->message, $this->exeption, $this->exceptionClass);
     }
 
-    public function scaffold($message = null, $exeption = null, $exceptionClass = null)
+    public function getLineContent($err_line, $err_file, $tabId)
     {
-        $err_file = $exeption->getFile();
-        $err_line = $exeption->getLine();
-
         $lineOFfset = $err_line - 15;
         $lineLength = $err_line + 15;
-
         $lineTxt = file($err_file);
+        $active = ($tabId == 1) ? 'active' : '';
+
         $fileContent = "";
-        for($x=$lineOFfset; $x<$lineLength; $x++) { 
-            if(($err_line - 1) === $x){
-                $fileContent .= "<span style='background-color: green; color: #fff;padding: 2px;'>".($x+1).$lineTxt[$x]."</span>";
-            }else{
-                $fileContent .= ($x+1).$lineTxt[$x];
+        $fileContent .= "<div class='tab-pane fade show " . $active . "' id='" . $tabId . "' role='tabpanel' aria-labelledby='" . $tabId . "-tab'>";
+        $fileContent .= "<div style='padding: 0px 28px;'>";
+        $fileContent .= "<p class='text-muted' style='font-size: 18px;font-weight: 300;'><span style='font-weight: 600;'>thrown in</span> <span style='text-decoration: underline;word-break: break-all;'>{$err_file}</span> <span style='font-weight: 600;'>on line </span>{$err_line}</p>";
+        $fileContent .= "</div>";
+        $fileContent .= "<table style='border-top: 1px solid #dedddd;width: 100%;'>";
+        $fileContent .= "<tr>";
+        $fileContent .= "<td class='line-number'>&nbsp;</td>";
+        $fileContent .= "<td class='line-content'><pre><code>&nbsp;</code></pre></td>";
+        $fileContent .= "</tr>";
+        for ($x = $lineOFfset; $x < $lineLength; $x++) {
+            if (!empty($lineTxt[$x])) {
+                if (($err_line - 1) === $x) {
+                    $fileContent .= "<tr class='line-err'>";
+                    $fileContent .= "<td class='line-number' style='background-color: #73b973 !important;'>" . ($x + 1) . "</td>";
+                    $fileContent .= "<td class='line-content'><pre><code>" . $lineTxt[$x] . "</code></pre></td>";
+                    $fileContent .= "</tr>";
+                } else {
+                    $fileContent .= "<tr>";
+                    $fileContent .= "<td class='line-number'>" . ($x + 1) . "</td>";
+                    $fileContent .= "<td class='line-content'><pre><code>" . $lineTxt[$x] . "</code></pre></td>";
+                    $fileContent .= "</tr>";
+                }
             }
         }
-        // $fileContent = file_get_contents($err_file, FALSE, NULL, $lineOFfset, $lineLength);
+        $fileContent .= "<tr>";
+        $fileContent .= "<td class='line-number'>&nbsp;</td>";
+        $fileContent .= "<td class='line-content'><pre><code>&nbsp;</code></pre></td>";
+        $fileContent .= "</tr>";
+        $fileContent .= "</table>";
+        $fileContent .= "</div>";
 
-        $coat = "";
-        $coat .= "<html lang='en'>";
-        $coat .= "<head>";
-        $coat .= "<meta charset='UTF-8'>";
-        $coat .= "<meta http-equiv='X-UA-Compatible' content='IE=edge'>";
-        $coat .= "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
-        $coat .= "<link rel='icon' href='" . public_url('/favicon.ico') . "' type='image/ico' />";
-        $coat .= "<title>";
-        $coat .= "ERROR";
-        $coat .= "</title>";
-        $coat .= "<link rel='stylesheet' href='" . public_url('/assets/sprnva/css/bootstrap.min.css') . "'>";
-        $coat .= "<style>";
-        $coat .= "body {";
-        $coat .= "background-color: #eef1f4;";
-        $coat .= "color: #1a4017;";
-        $coat .= "}";
-        $coat .= "</style>";
-        $coat .= "<script src='" . public_url('/assets/sprnva/js/jquery-3.6.0.min.js') . "'></script>";
-        $coat .= "<script src='" . public_url('/assets/sprnva/js/popper.min.js') . "'></script>";
-        $coat .= "<script src='" . public_url('/assets/sprnva/js/bootstrap.min.js') . "'></script>";
-        $coat .= "</head>";
-        $coat .= "<div class='container'>";
-        $coat .= "<div class='row justify-content-md-center'>";
+        return $fileContent;
+    }
 
-        $coat .= "<div class='col-md-12'>";
-        $coat .= "<div class='card' style='margin-top: 5%;background-color: #fff; border: 2px solid #e1dfdf; border-radius: 3px; padding: 10px;'>";
-        $coat .= "<div class='card-body d-flex flex-column' style='padding: 50px;'>";
-        $coat .= "<p class='text-muted' style='margin: 0px;font-size: 18px;''>{$exceptionClass}</p>";
-        $coat .= "<p class='' style='font-size: 30px;font-weight: 500;'>{$message}</p>";
-        $coat .= "<small class='text-muted' style='font-size: 14px;'>".$_SERVER['REQUEST_URI'] ."</small>";
-        $coat .= "</div>";
-        $coat .= "</div>";
-        $coat .= "</div>";
+    public function scaffold($message = null, $exeption = null, $exceptionClass = null)
+    {
+        $traceContent = '';
+        $fileContent = '';
+        $counter = 1;
+        $err_trace = $exeption->getTrace();
+        foreach ($err_trace as $key => $trace) {
 
-        $coat .= "<div class='col-md-12'>";
-        $coat .= "<div class='card' style='margin-top: 2%;margin-bottom: 5%;background-color: #fff; border: 2px solid #e1dfdf; border-radius: 3px;'>";
-        $coat .= "<div class='card-header' style='padding: 15px;background-color: #1e4d1a;color: #fff;'>";
-        $coat .= "Sprnva Blast : Stack Trace";
-        $coat .= "</div>";
-        $coat .= "<div class='card-body d-flex flex-column' style='padding: 30px;'>";
-        $coat .= "<p class='text-muted' style='font-size: 18px;font-weight: 300;'><span style='font-weight: 600;'>thrown in</span> {$err_file} <span style='font-weight: 600;'>on line </span>{$err_line}</p>";
-        $coat .= "<pre style='border: 1px solid #ddd;'><code style='color: #20371e;font-size: 16px;'>{$fileContent}</code></pre>";
-        $coat .= "</div>";
-        $coat .= "</div>";
-        $coat .= "</div>";
+            $active = ($counter == 1) ? 'active' : '';
 
-        $coat .= "</div>";
-        $coat .= "</div>";
-        $coat .= "</body>";
-        $coat .= "</html>";
+            $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'>" . $trace['file'] . "</a>";
+
+            $fileContent .= $this->getLineContent($trace['line'], $trace['file'], $counter);
+
+            $counter++;
+        }
+
+        $viewStub = file_get_contents(__DIR__ . "/view/index.php");
+        $icon = public_url(' /favicon.ico');
+        $css = public_url('/assets/sprnva/css/bootstrap.min.css');
+        $jquery = public_url('/assets/sprnva/js/jquery-3.6.0.min.js');
+        $popper = public_url('/assets/sprnva/js/popper.min.js');
+        $bstrap = public_url('/assets/sprnva/js/bootstrap.min.js');
+        $r_uri = $_SERVER['REQUEST_URI'];
+        $cur_dir = __DIR__;
+
+        $coat = str_replace(
+            [
+                '{{$exceptionClass}}',
+                '{{$message}}',
+                '{{$traceContent}}',
+                '{{$fileContent}}',
+                '{{icon}}',
+                '{{css}}',
+                '{{jquery}}',
+                '{{popper}}',
+                '{{bstrap}}',
+                '{{$r_uri}}',
+                '{{$cur_dir}}'
+            ],
+            [
+                $exceptionClass,
+                $message,
+                $traceContent,
+                $fileContent,
+                $icon,
+                $css,
+                $jquery,
+                $popper,
+                $bstrap,
+                $r_uri,
+                $cur_dir
+            ],
+            $viewStub
+        );
 
         echo $coat;
         die();
