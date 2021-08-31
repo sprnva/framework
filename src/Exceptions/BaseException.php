@@ -26,9 +26,9 @@ class BaseException
         $fileContent = "";
         for($x=$lineOFfset; $x<$lineLength; $x++) { 
             if(($err_line - 1) === $x){
-                $fileContent .= "<span style='background-color: green; color: #fff;padding: 2px;'>".$x.$lineTxt[$x]."</span>";
+                $fileContent .= "<span style='background-color: green; color: #fff;padding: 2px;'>".($x+1).$lineTxt[$x]."</span>";
             }else{
-                $fileContent .= $x.$lineTxt[$x];
+                $fileContent .= ($x+1).$lineTxt[$x];
             }
         }
         // $fileContent = file_get_contents($err_file, FALSE, NULL, $lineOFfset, $lineLength);
@@ -72,9 +72,9 @@ class BaseException
         $coat .= "<div class='card-header' style='padding: 15px;background-color: #1e4d1a;color: #fff;'>";
         $coat .= "Sprnva Blast : Stack Trace";
         $coat .= "</div>";
-        $coat .= "<div class='card-body d-flex flex-column' style='padding: 50px;'>";
+        $coat .= "<div class='card-body d-flex flex-column' style='padding: 30px;'>";
         $coat .= "<p class='text-muted' style='font-size: 18px;font-weight: 300;'><span style='font-weight: 600;'>thrown in</span> {$err_file} <span style='font-weight: 600;'>on line </span>{$err_line}</p>";
-        $coat .= "<pre style='border: 1px solid #ddd;'><code style='color: #20371e;'>{$fileContent}</code></pre>";
+        $coat .= "<pre style='border: 1px solid #ddd;'><code style='color: #20371e;font-size: 16px;'>{$fileContent}</code></pre>";
         $coat .= "</div>";
         $coat .= "</div>";
         $coat .= "</div>";
