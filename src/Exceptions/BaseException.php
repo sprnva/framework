@@ -14,17 +14,20 @@ class BaseException
         return $this->scaffold($this->message, $this->exeption, $this->exceptionClass);
     }
 
-    public function getLineContent($err_line, $err_file, $tabId)
+    public function getLineContent($err_line, $err_file, $tabId, $class, $funct)
     {
         $lineOFfset = $err_line - 15;
         $lineLength = $err_line + 15;
         $lineTxt = file($err_file);
         $active = ($tabId == 1) ? 'active' : '';
+        $displayClass = (!empty($class))?$class."::":'';
+        $traceFile = $this->selectiveStr($err_file);
 
         $fileContent = "";
         $fileContent .= "<div class='tab-pane fade show " . $active . "' id='" . $tabId . "' role='tabpanel' aria-labelledby='" . $tabId . "-tab'>";
         $fileContent .= "<div style='padding: 0px 28px;'>";
-        $fileContent .= "<p class='text-muted' style='font-size: 18px;font-weight: 300;'><span style='font-weight: 600;'>thrown in</span> <span style='text-decoration: underline;word-break: break-all;'>{$err_file}</span> <span style='font-weight: 600;'>on line </span>{$err_line}</p>";
+        $fileContent .= "<p class='text-muted' style='font-size: 14px;margin: 0px;'>". $displayClass . $funct ."</p>";
+        $fileContent .= "<p style='font-size: 14px;font-weight: 300;'><span style='word-break: break-all;font-size: 16px'>{$traceFile}</span><span style='font-weight: 600;'>:{$err_line}</span></p>";
         $fileContent .= "</div>";
         $fileContent .= "<table style='border-top: 1px solid #dedddd;width: 100%;'>";
         $fileContent .= "<tr>";
@@ -56,23 +59,39 @@ class BaseException
         return $fileContent;
     }
 
+    public function selectiveStr($mainString)
+    {
+        $prefix = "/sprnva";
+        $index = strpos($mainString, $prefix) + strlen($prefix);
+        $result = substr($mainString, $index);
+        return $result;
+    }
+
     public function scaffold($message = null, $exeption = null, $exceptionClass = null)
     {
         $traceContent = '';
         $fileContent = '';
         $counter = 1;
         $err_trace = $exeption->getTrace();
-        foreach ($err_trace as $key => $trace) {
+        foreach ($err_trace as $trace) {
 
             $active = ($counter == 1) ? 'active' : '';
 
-            $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'>" . $trace['file'] . "</a>";
+            $showClass = (!empty($trace['class']))?"<small class='text-muted mt-2'>".$trace['class']."</small>":"";
 
-            $fileContent .= $this->getLineContent($trace['line'], $trace['file'], $counter);
+            $result = $this->selectiveStr($trace['file']);
+
+            if(!empty($trace['line'])){
+
+                $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":". $trace['line'] . "</div></div>".$showClass."</a>";
+            }
+
+            $fileContent .= $this->getLineContent($trace['line'], $trace['file'], $counter, $trace['class'], $trace['function']);
 
             $counter++;
         }
 
+        $title = $message;
         $viewStub = file_get_contents(__DIR__ . "/view/index.php");
         $icon = public_url(' /favicon.ico');
         $css = public_url('/assets/sprnva/css/bootstrap.min.css');
@@ -84,6 +103,7 @@ class BaseException
 
         $coat = str_replace(
             [
+                '{{$title}}',
                 '{{$exceptionClass}}',
                 '{{$message}}',
                 '{{$traceContent}}',
@@ -97,6 +117,7 @@ class BaseException
                 '{{$cur_dir}}'
             ],
             [
+                $title,
                 $exceptionClass,
                 $message,
                 $traceContent,

@@ -3,9 +3,11 @@
 namespace App\Core\Database\QueryBuilder;
 
 use PDO;
+use PDOException;
 use Exception;
-use App\Core\Filesystem;
+use App\Core\Filesystem\Filesystem;
 use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
+use RuntimeException;
 
 class QueryBuilder implements QueryBuilderInterface
 {
@@ -54,14 +56,15 @@ class QueryBuilder implements QueryBuilderInterface
 	public function select($columns, $table, $params = '')
 	{
 		try {
+
 			$inject = ($params == '') ? "" : "WHERE $params";
 			$statement = $this->pdo->prepare("SELECT {$columns} FROM {$table} {$inject}");
 			$statement->execute();
 			$this->listen[] = "SELECT {$columns} FROM {$table} {$inject}";
 			$this->result = $statement->fetch(PDO::FETCH_ASSOC);
 			return $this;
-		} catch (Exception $e) {
-			throw new QueryBuilderException("Whoops! error occurred.", $e);
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
 		}
 	}
 
@@ -79,8 +82,8 @@ class QueryBuilder implements QueryBuilderInterface
 			$this->listen[] = "select {$column} from {$table} {$inject}";
 			$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
 			return $this;
-		} catch (Exception $e) {
-			throw new QueryBuilderException("Whoops! error occurred.", $e);
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
 		}
 	}
 
@@ -271,8 +274,8 @@ class QueryBuilder implements QueryBuilderInterface
 					return 0;
 				}
 			}
-		} catch (Exception $e) {
-			throw new QueryBuilderException("Whoops! error occurred.", $e);
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
 		}
 	}
 
@@ -312,8 +315,8 @@ class QueryBuilder implements QueryBuilderInterface
 			} else {
 				return 0;
 			}
-		} catch (Exception $e) {
-			throw new QueryBuilderException("Whoops! error occurred.", $e);
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
 		}
 	}
 
@@ -347,8 +350,8 @@ class QueryBuilder implements QueryBuilderInterface
 			} else {
 				return 0;
 			}
-		} catch (Exception $e) {
-			throw new QueryBuilderException("Whoops! error occurred.", $e);
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
 		}
 	}
 
@@ -376,8 +379,8 @@ class QueryBuilder implements QueryBuilderInterface
 					return 0;
 				}
 			}
-		} catch (Exception $e) {
-			throw new QueryBuilderException("Whoops! error occurred.", $e);
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
 		}
 	}
 

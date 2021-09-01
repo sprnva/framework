@@ -2,10 +2,10 @@
 
 namespace App\Core\Database\QueryBuilder\Exception;
 
-use Exception;
+use PDOException;
 use App\Core\Exception\BaseException;
 
-class QueryBuilderException extends Exception
+class QueryBuilderException extends PDOException
 {
     /**
      * Main constructor class which overrides the parent constructor and set the message

@@ -5,7 +5,7 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <link rel='icon' href='{{icon}}' type='image/ico'>
-    <title>ERROR</title>
+    <title>{{$title}}</title>
     <link rel='stylesheet' href='{{css}}'>
     <style>
         body {
@@ -19,15 +19,21 @@
         }
 
         .line-number {
-            min-width: 60px;
             background-color: #d9ecd9;
             text-align: center;
-            padding: 3px;
+            padding: 3px 7px 3px 7px;
             position: sticky;
             left: 0;
+            font-size: 12px;
         }
 
-        .line-content {}
+        .line-content {
+            font-size: 1em;
+        }
+
+        .nav-link {
+            font-size: 12px;
+        }
 
         li.list-group-item:hover {
             background-color: #d9ecd9;
@@ -62,6 +68,8 @@
             color: #426440;
             padding: 13px;
             border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
         }
     </style>
     <script src='{{jquery}}'></script>
@@ -92,12 +100,12 @@
 
                     <div class='row'>
                         <div class='col-md-4' style='padding-top: 15px;padding: 0px;border-right: 1px solid #ccc;'>
-                            <div class="nav flex-column nav-pills mb-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <div class="nav flex-column nav-pills mb-3" id="v-pills-tab" role="tablist" aria-orientation="vertical" style='overflow: hidden;overflow-x: auto;overflow-y: auto;padding: 0px;height: 100%;'>
                                 {{$traceContent}}
                             </div>
                         </div>
                         <div class='col-md-8' style='padding: 0px;padding-top: 15px;'>
-                            <div class='col-md-12' style='background-color: #fff;overflow: hidden;overflow-x: auto;overflow-y: auto;padding: 0px;'>
+                            <div class='col-md-12' style='background-color: #fff;overflow: hidden;overflow-x: auto;overflow-y: auto;padding: 0px;height: 100%;'>
                                 <div class="tab-content" id="v-pills-tabContent">
                                     {{$fileContent}}
                                 </div>
