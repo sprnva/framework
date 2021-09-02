@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE);
+error_reporting(0);
 
 ini_set('date.timezone', 'Asia/Manila');
 date_default_timezone_set('Asia/Manila');
@@ -11,7 +11,7 @@ use App\Core\Database\Connection\Connection;
 
 $config_file = 'config.php';
 if (!file_exists($config_file)) {
-    die("The [config.php] not found.");
+   dd("The [config.php] not found.");
 }
 
 require $config_file;

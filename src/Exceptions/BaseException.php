@@ -5,20 +5,25 @@ namespace App\Core\Exception;
 class BaseException
 {
 
-    public function __construct($message = null, $exeption = null, $exceptionClass = null)
+    public function __construct($message = null, $exception = null, $exceptionClass = null, $getLastError = null)
     {
         $this->message = $message;
-        $this->exeption = $exeption;
+        $this->exception = $exception;
+        $this->getLastError = $getLastError;
         $this->exceptionClass = ($exceptionClass == null) ? get_class($this) : $exceptionClass;
 
-        return $this->scaffold($this->message, $this->exeption, $this->exceptionClass);
+        if($this->exception != null && $getLastError == null){
+            return $this->scaffoldException($this->message, $this->exception, $this->exceptionClass);
+        }else{
+            return $this->scaffoldError($this->message, $this->getLastError, $this->exceptionClass);
+        }
     }
 
     public function getLineContent($err_line, $err_file, $tabId, $class, $funct)
     {
         $lineOFfset = $err_line - 15;
         $lineLength = $err_line + 15;
-        $lineTxt = file($err_file);
+        $lineTxt = (file_exists($err_file))?file($err_file):null;
         $active = ($tabId == 1) ? 'active' : '';
         $displayClass = (!empty($class))?$class."::":'';
         $traceFile = $this->selectiveStr($err_file);
@@ -35,16 +40,16 @@ class BaseException
         $fileContent .= "<td class='line-content'><pre><code>&nbsp;</code></pre></td>";
         $fileContent .= "</tr>";
         for ($x = $lineOFfset; $x < $lineLength; $x++) {
-            if (!empty($lineTxt[$x])) {
+            if (!empty($lineTxt[$x]) || $x == ($err_line - 1)) {
                 if (($err_line - 1) === $x) {
                     $fileContent .= "<tr class='line-err'>";
                     $fileContent .= "<td class='line-number' style='background-color: #73b973 !important;'>" . ($x + 1) . "</td>";
-                    $fileContent .= "<td class='line-content'><pre><code>" . $lineTxt[$x] . "</code></pre></td>";
+                    $fileContent .= "<td class='line-content'><pre><code>" . sanitizeString($lineTxt[$x], false) . "</code></pre></td>";
                     $fileContent .= "</tr>";
                 } else {
                     $fileContent .= "<tr>";
                     $fileContent .= "<td class='line-number'>" . ($x + 1) . "</td>";
-                    $fileContent .= "<td class='line-content'><pre><code>" . $lineTxt[$x] . "</code></pre></td>";
+                    $fileContent .= "<td class='line-content'><pre><code>" . sanitizeString($lineTxt[$x], false) . "</code></pre></td>";
                     $fileContent .= "</tr>";
                 }
             }
@@ -67,7 +72,7 @@ class BaseException
         return $result;
     }
 
-    public function scaffold($message = null, $exeption = null, $exceptionClass = null)
+    public function scaffoldException($message = null, $exeption = null, $exceptionClass = null)
     {
         $traceContent = '';
         $fileContent = '';
@@ -91,6 +96,30 @@ class BaseException
             $counter++;
         }
 
+        $this->generateView($exceptionClass, $message, $traceContent, $fileContent);
+    }
+
+    public function scaffoldError($message = null, $exeption  = null, $exceptionClass = null)
+    {
+        $traceContent = '';
+        $fileContent = '';
+        $counter = 1;
+
+        $active = ($counter == 1) ? 'active' : '';
+        $result = $this->selectiveStr($exeption['file']);
+
+        if(!empty($exeption['line'])){
+
+            $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":". $exeption['line'] . "</div></div></a>";
+        }
+
+        $fileContent .= $this->getLineContent($exeption['line'], $exeption['file'], $counter, $exeption['class'], $exeption['function']);
+        
+        $this->generateView($exceptionClass, $message, $traceContent, $fileContent);
+    }
+
+    public function generateView($exceptionClass, $message, $traceContent, $fileContent)
+    {
         $title = $message;
         $viewStub = file_get_contents(__DIR__ . "/view/index.php");
         $icon = public_url(' /favicon.ico');

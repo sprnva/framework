@@ -2,13 +2,27 @@
 
 session_start();
 
+use App\Core\Exception\BaseException;
+use PHPMailer\PHPMailer\Exception;
+use App\Core\Dumper;
 use App\Core\App;
 use App\Core\BcryptHasher;
-use App\Core\Dumper;
 use App\Core\Request;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
+
+register_shutdown_function(function () {
+    $lastError    = error_get_last();
+    $fatal_errors = [E_ERROR, E_WARNING, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING, E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_STRICT, E_RECOVERABLE_ERROR, E_DEPRECATED, E_USER_DEPRECATED, E_ALL];
+    if ($lastError && in_array($lastError['type'], $fatal_errors, true)) {
+
+        $html = ob_get_contents();
+        ob_end_clean();
+
+        throw new BaseException($lastError['message'], null, null, $lastError);
+    }
+});
+
 
 Request::csrf_token();
 
@@ -113,10 +127,14 @@ function route($route, $data = "")
  * sanitize strings
  * 
  * @param string $data
+ * @param bool $trim
  */
-function sanitizeString($data)
+function sanitizeString($data, $trim = true)
 {
-    $data = trim($data);
+    if($trim){
+        $data = trim($data);
+    }
+
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
 
@@ -468,3 +486,6 @@ function fortified()
 
 // add additional helper functions from the users
 require __DIR__ . '/../../../../config/function.helpers.php';
+
+
+
