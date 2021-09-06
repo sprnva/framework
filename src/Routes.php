@@ -1,4 +1,5 @@
 <?php
+
 if (file_exists(__DIR__ . '/Database/Migration/routes/migration.php')) {
     require __DIR__ . '/Database/Migration/routes/migration.php';
 }
@@ -9,3 +10,4 @@ if (file_exists(__DIR__ . '/../../../../config/routes/')) {
         require __DIR__ . '/../../../../config/routes/' . $route;
     }
 }
+

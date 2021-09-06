@@ -50,7 +50,7 @@ class Auth
      */
     public static function user($record)
     {
-        return $_SESSION['AUTH'][$record];
+        return (!empty($_SESSION['AUTH'])) ? $_SESSION['AUTH'][$record] : null;
     }
 
     /**
