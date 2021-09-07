@@ -14,9 +14,9 @@ class BaseException
 
         $_SERVER['EXCEPTION'] = 1;
 
-        if($this->exception != null && $getLastError == null){
+        if ($this->exception != null && $getLastError == null) {
             return $this->scaffoldException($this->message, $this->exception, $this->exceptionClass);
-        }else{
+        } else {
             return $this->scaffoldError($this->message, $this->getLastError, $this->exceptionClass);
         }
     }
@@ -25,15 +25,15 @@ class BaseException
     {
         $lineOFfset = $err_line - 15;
         $lineLength = $err_line + 15;
-        $lineTxt = (file_exists($err_file))?file($err_file):null;
+        $lineTxt = (file_exists($err_file)) ? file($err_file) : null;
         $active = ($tabId == 1) ? 'active' : '';
-        $displayClass = (!empty($class))?$class."::":'';
+        $displayClass = (!empty($class)) ? $class . "::" : '';
         $traceFile = $this->selectiveStr($err_file);
 
         $fileContent = "";
         $fileContent .= "<div class='tab-pane fade show " . $active . "' id='" . $tabId . "' role='tabpanel' aria-labelledby='" . $tabId . "-tab'>";
         $fileContent .= "<div style='padding: 0px 28px;'>";
-        $fileContent .= "<p class='text-muted' style='font-size: 14px;margin: 0px;'>". $displayClass . $funct ."</p>";
+        $fileContent .= "<p class='text-muted' style='font-size: 14px;margin: 0px;'>" . $displayClass . $funct . "</p>";
         $fileContent .= "<p style='font-size: 14px;font-weight: 300;'><span style='word-break: break-all;font-size: 16px'>{$traceFile}</span><span style='font-weight: 600;'>:{$err_line}</span></p>";
         $fileContent .= "</div>";
         $fileContent .= "<div style='overflow: hidden;overflow-x: auto;overflow-y: auto;padding: 0px;'><table style='border-top: 1px solid #dedddd;width: 100%;'>";
@@ -70,8 +70,8 @@ class BaseException
 
     public function selectiveStr($mainString)
     {
-        $prefix = "/sprnva";
-        $index = strpos($mainString, $prefix) + strlen($prefix);
+        $prefix = "sprnva";
+        $index = strpos($mainString, $prefix) + (strlen($prefix) + 1);
         $result = substr($mainString, $index);
         return $result;
     }
@@ -86,13 +86,13 @@ class BaseException
 
             $active = ($counter == 1) ? 'active' : '';
 
-            $showClass = (!empty($trace['class']))?"<small class='text-muted mt-2'>".$trace['class']."</small>":"";
+            $showClass = (!empty($trace['class'])) ? "<small class='text-muted mt-2'>" . $trace['class'] . "</small>" : "";
 
             $result = $this->selectiveStr($trace['file']);
 
-            if(!empty($trace['line'])){
+            if (!empty($trace['line'])) {
 
-                $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":". $trace['line'] . "</div></div>".$showClass."</a>";
+                $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":" . $trace['line'] . "</div></div>" . $showClass . "</a>";
             }
 
             $fileContent .= $this->getLineContent($trace['line'], $trace['file'], $counter, $trace['class'], $trace['function']);
@@ -108,27 +108,23 @@ class BaseException
         $traceContent = '';
         $fileContent = '';
         $counter = 1;
-        dd($exeption);
 
-        if(!empty($exeption['*file']) && !empty($exeption['*line'])){
-            $file = $exeption['*file'];
-            $line = $exeption['*line'];
-        }else{
-            $file = $exeption['file'];
-            $line = $exeption['line'];
+        $file = $exeption['file'];
+        $line = $exeption['line'];
+        $_class = $exeption['class'];
+        $_function = $exeption['function'];
+
+        $active = ($counter == 1) ? 'active' : '';
+        $result = $this->selectiveStr($file);
+
+        if (!empty($file)) {
+
+            $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":" . $line . "</div></div></a>";
         }
 
-            $active = ($counter == 1) ? 'active' : '';
-            $result = $this->selectiveStr($file);
+        $fileContent .= $this->getLineContent($line, $file, $counter, $_class, $_function);
 
-            if(!empty($file)){
-
-                $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":". $line . "</div></div></a>";
-            }
-
-            $fileContent .= $this->getLineContent($line, $file, $counter, $exeption['class'], $exeption['function']);
-            
-            $this->generateView($exceptionClass, $message, $traceContent, $fileContent);
+        $this->generateView($exceptionClass, $message, $traceContent, $fileContent);
     }
 
     public function generateView($exceptionClass, $message, $traceContent, $fileContent)

@@ -6,12 +6,10 @@ date_default_timezone_set('Asia/Manila');
 use App\Core\App;
 use App\Core\Database\QueryBuilder\QueryBuilder;
 use App\Core\Database\Connection\Connection;
-use App\Core\Exception\BaseException;
 
 $config_file = 'config.php';
 if (!file_exists($config_file)) {
-   // dd("The [config.php] not found.");
-    throw new BaseException("The [config.php] not found.", null, null, (array)(new Exception()));
+    dd('The [config.php] not found.');
 }
 
 require $config_file;
@@ -30,5 +28,3 @@ if (App::get('config')['database']['name'] != '') {
         Connection::make(App::get('config')['database'])
     ));
 }
-
-
