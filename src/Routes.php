@@ -10,4 +10,3 @@ if (file_exists(__DIR__ . '/../../../../config/routes/')) {
         require __DIR__ . '/../../../../config/routes/' . $route;
     }
 }
-
