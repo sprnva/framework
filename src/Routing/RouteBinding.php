@@ -24,15 +24,14 @@ class RouteBinding
      */
     public function direct($uri, $requestType)
     {
-        Auth::routeGuardian($this->routes[$requestType][$uri]['middleware']);
-
         if (array_key_exists($uri, $this->routes[$requestType])) {
+
+            Auth::routeGuardian($this->routes[$requestType][$uri]['middleware']);
+
             if (is_callable($this->routes[$requestType][$uri]['action'])) {
                 call_user_func($this->routes[$requestType][$uri]['action']);
                 die();
             } else {
-                Auth::routeGuardian($this->routes[$requestType][$uri]['middleware']);
-
                 $splat  = explode('@', $this->routes[$requestType][$uri]['action']);
                 return $this->callAction($splat[0], $splat[1]);
             }
@@ -44,13 +43,14 @@ class RouteBinding
                 array_shift($matches);
 
                 if ($matches) {
+
+                    Auth::routeGuardian($val['middleware']);
+
                     if (is_callable($val['action'])) {
                         $param_array = array_filter($matches, 'is_int', ARRAY_FILTER_USE_KEY);
                         call_user_func_array($val['action'], $param_array);
                         die();
                     } else {
-                        Auth::routeGuardian($val['middleware']);
-
                         $getAction = explode('@', $val['action']);
                         return $this->callAction($getAction[0], $getAction[1], $matches);
                     }
