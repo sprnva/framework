@@ -130,12 +130,13 @@ class BaseException
     public function generateView($exceptionClass, $message, $traceContent, $fileContent)
     {
         $title = $message;
+        $base_url = App::get('config')['app']['base_url'];
         $viewStub = file_get_contents(__DIR__ . "/view/index.php");
-        $icon = 'vendor/sprnva/framework/src/Exception/assets/favicon.ico';
-        $css = 'vendor/sprnva/framework/src/Exception/assets/css/bootstrap.min.css';
-        $jquery = 'vendor/sprnva/framework/src/Exception/assets/js/jquery-3.6.0.min.js';
-        $popper = 'vendor/sprnva/framework/src/Exception/assets/js/popper.min.js';
-        $bstrap = 'vendor/sprnva/framework/src/Exception/assets/js/bootstrap.min.js';
+        $icon = $base_url . '/vendor/sprnva/framework/src/Exception/assets/favicon.ico';
+        $css = $base_url . '/vendor/sprnva/framework/src/Exception/assets/css/bootstrap.min.css';
+        $jquery = $base_url . '/vendor/sprnva/framework/src/Exception/assets/js/jquery-3.6.0.min.js';
+        $popper = $base_url . '/vendor/sprnva/framework/src/Exception/assets/js/popper.min.js';
+        $bstrap = $base_url . '/vendor/sprnva/framework/src/Exception/assets/js/bootstrap.min.js';
         $r_uri = $_SERVER['REQUEST_URI'];
         $cur_dir = __DIR__;
 
