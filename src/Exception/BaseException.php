@@ -132,7 +132,7 @@ class BaseException
     public function generateView($exceptionClass, $message, $traceContent, $fileContent)
     {
         $title = $message;
-        $base_url = App::get('config')['app']['base_url'];
+        $base_url = '/' . App::get('config')['app']['base_url'];
         $viewStub = file_get_contents(__DIR__ . "/view/index.php");
         $icon = $base_url . '/vendor/sprnva/framework/src/Exception/assets/favicon.ico';
         $css = $base_url . '/vendor/sprnva/framework/src/Exception/assets/css/bootstrap.min.css';
