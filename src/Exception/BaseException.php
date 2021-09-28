@@ -2,6 +2,8 @@
 
 namespace App\Core\Exception;
 
+use App\Core\App;
+
 class BaseException
 {
 
