@@ -26,7 +26,7 @@ class Auth
         $passchecker = checkHash($request['password'], $datas['password']);
 
         if ($passchecker == "") {
-            redirect('/login', ["message" => "User not found.", "status" => 'danger']);
+            redirect('/login', ["message" => "User not found."]);
         }
 
         $users = [];
@@ -104,12 +104,12 @@ class Auth
                     'updated_at' => date("Y-m-d H:i:s")
                 ];
                 DB()->update('users', $update_pass, "id = '$user_id'");
-                $response_message = ["message" => "Password has changed.", "status" => "success"];
+                $response_message = ["message" => "Password has changed."];
             } else {
-                $response_message = ["message" => "Passwords must match.", "status" => "danger"];
+                $response_message = ["message" => "Passwords must match."];
             }
         } else {
-            $response_message = ["message" => "Old password did not match.", "status" => "danger"];
+            $response_message = ["message" => "Old password did not match."];
         }
 
         return $response_message;
@@ -137,12 +137,12 @@ class Auth
 
                 DB()->delete("password_resets", "email = '$isTokenLegit[email]' AND token = '$request[token]'");
 
-                redirect('/login', ["message" => "Success reset password", "status" => "success"]);
+                redirect('/login', ["message" => "Success reset password"]);
             } else {
-                redirect('/reset/password/' . $request['token'], ["message" => "Passwords must match.", "status" => "danger"]);
+                redirect('/reset/password/' . $request['token'], ["message" => "Passwords must match."]);
             }
         } else {
-            redirect('/reset/password/' . $request['token'], ["message" => "Token is not authorized.", "status" => "danger"]);
+            redirect('/reset/password/' . $request['token'], ["message" => "Token is not authorized."]);
         }
     }
 

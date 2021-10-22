@@ -221,7 +221,7 @@ class Request
 		$isEmailExist = DB()->select("*", "users", "email = '" . $request['email'] . "'")->get();
 
 		if (!$isEmailExist) {
-			redirect('/forgot/password', ["message" => 'E-mail not found in the server.', "status" => 'danger']);
+			redirect('/forgot/password', ["message" => 'E-mail not found in the server.']);
 		} else {
 
 			$token = Request::token(10);
@@ -259,7 +259,7 @@ class Request
 				}
 			}
 
-			redirect('/forgot/password', $isSent);
+			redirect('/forgot/password', $isSent['message']);
 		}
 	}
 
