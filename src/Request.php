@@ -47,28 +47,28 @@ class Request
 				switch ($type[0]) {
 					case 'required':
 						if ($_REQUEST[$key] == "") {
-							$errorList[] = "&bull; {$key} is {$type[0]} but has no value.";
+							$errorList[$key] = "{$key} is {$type[0]} but has no value.";
 						}
 
 						break;
 
 					case 'min':
 						if (strlen($_REQUEST[$key]) < $type[1]) {
-							$errorList[] = "&bull; {$key} is less than {$type[1]} character/s.";
+							$errorList[$key] = "{$key} is less than {$type[1]} character/s.";
 						}
 
 						break;
 
 					case 'max':
 						if (strlen($_REQUEST[$key]) > $type[1]) {
-							$errorList[] = "&bull; {$key} is greater than {$type[1]} character/s.";
+							$errorList[$key] = "{$key} is greater than {$type[1]} character/s.";
 						}
 
 						break;
 
 					case 'email':
 						if (strpos('@', $_REQUEST[$key]) !== false) {
-							$errorList[] = "&bull; {$key} is not a valid email address.";
+							$errorList[$key] = "{$key} is not a valid email address.";
 						}
 
 						break;
@@ -112,7 +112,7 @@ class Request
 							$response = DB()->select("count(*) as '{$table}_count'", $param[0], $query)->get();
 
 							if ($response["{$table}_count"] > 0) {
-								$errorList[] = "&bull; {$key} already exist in database.";
+								$errorList[$key] = "{$key} already exist in database.";
 							}
 						}
 
@@ -122,7 +122,15 @@ class Request
 
 						$bool = ['true', 'false', '1', '0'];
 						if (!in_array($_REQUEST[$key], $bool)) {
-							$errorList[] = "&bull; {$key} is not a boolean.";
+							$errorList[$key] = "{$key} is not a boolean.";
+						}
+
+						break;
+
+					case 'numeric':
+
+						if (!is_numeric($_REQUEST[$key])) {
+							$errorList[$key] = "{$key} is not a number.";
 						}
 
 						break;
@@ -142,7 +150,16 @@ class Request
 	 */
 	public static function validate($uri = '', $datas = [])
 	{
+		$post_data['validationError'] = [];
 		$errorList = static::validator($datas);
+		if (!empty($errorList)) {
+			$_SESSION["RESPONSE_MSG"] = $errorList;
+			$post_data['validationError'] = $errorList;
+
+			if ($uri != '') {
+				redirect($uri);
+			}
+		}
 
 		foreach ($_REQUEST as $key => $value) {
 			$post_data[$key] = sanitizeString($value);
@@ -153,10 +170,6 @@ class Request
 		}
 
 		static::storeValidatedToSession($setOldInput);
-
-		if (!empty($errorList)) {
-			redirect($uri, ["message" => implode('<br>', $errorList), "status" => "danger"]);
-		}
 
 		if (isset($_REQUEST['csrf_token'])) {
 			static::verifyCsrfToken($_REQUEST['csrf_token']);

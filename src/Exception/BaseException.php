@@ -3,6 +3,7 @@
 namespace App\Core\Exception;
 
 use App\Core\App;
+use App\Core\Filesystem\Filesystem;
 
 class BaseException
 {
@@ -133,7 +134,7 @@ class BaseException
     {
         $title = $message;
         $base_url = '/' . App::get('config')['app']['base_url'];
-        $viewStub = file_get_contents(__DIR__ . "/view/index.php");
+        $viewStub = Filesystem::get(__DIR__ . "/view/index.php");
         $icon = $base_url . '/vendor/sprnva/framework/src/Exception/assets/favicon.ico';
         $css = $base_url . '/vendor/sprnva/framework/src/Exception/assets/css/bootstrap.min.css';
         $jquery = $base_url . '/vendor/sprnva/framework/src/Exception/assets/js/jquery-3.6.0.min.js';

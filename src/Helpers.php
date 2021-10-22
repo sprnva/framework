@@ -8,6 +8,7 @@ $_SERVER['EXCEPTION'] = 0;
 use App\Core\App;
 use App\Core\BcryptHasher;
 use App\Core\Request;
+use App\Core\Error;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use App\Core\Dumper;
@@ -24,7 +25,7 @@ Request::csrf_token();
  */
 function appversion()
 {
-    return "1.3.26";
+    return "1.3.27";
 }
 
 /**
@@ -193,13 +194,13 @@ function sendMail($subject, $body, $recipients)
  * 
  * @param string $type
  */
-function alert_msg()
+function alert_msg($status = "info")
 {
     $msg = "";
 
     if (!empty($_SESSION['RESPONSE_MSG'])) {
 
-        $msg = "<div class='alert alert-" . $_SESSION['RESPONSE_MSG']['status'] . " alert-dismissible fade show' role='alert' style='border-left-width: 4px;'>" . $_SESSION['RESPONSE_MSG']['message'] . "<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div>";
+        $msg = "<div class='alert alert-" . $status . " alert-dismissible fade show' role='alert' style='border-left-width: 4px;'>" . implode('<br>', Error::any()) . "<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div>";
 
         unset($_SESSION['RESPONSE_MSG']);
     }
