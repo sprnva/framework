@@ -22,7 +22,10 @@ class Auth
      */
     public static function authenticate($request)
     {
-        $datas = DB()->select("*", "users", "username = '$request[username]'")->get();
+        $datas = DB()->select("*", "users", "username = '$request[username]'")
+            ->with([
+                "roles" => ['role_id', 'id']
+            ])->get();
         $passchecker = checkHash($request['password'], $datas['password']);
 
         if ($passchecker == "") {
