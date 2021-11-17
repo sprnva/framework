@@ -288,6 +288,28 @@ class Migrator
 			}
 		}
 	}
+	
+	/**
+	 * this will create a permissions migration
+	 * 
+	 */
+	public function permissionTableMigrate()
+	{
+		$isRoleTableExist = $this->schema->tableExist('role');
+		if (!$isRoleTableExist) {
+
+			$fileName = "20210408051901_create_permission_table.php";
+			$dir = $this->migrationFiles . $fileName;
+			$content = file_get_contents($this->stubsPath . "permissions.stubs");
+
+			if (!file_exists($dir)) {
+				$handle = fopen($dir, 'w+');
+				fwrite($handle, $content);
+				fclose($handle);
+				chmod($dir, 0777);
+			}
+		}
+	}
 
 	/**
 	 * this will create a password_resets migration
@@ -379,6 +401,7 @@ class Migrator
 		$response .= $this->runStoredDbSchema();
 		$this->userTableMigrate();
 		$this->roleTableMigrate();
+		$this->permissionTableMigrate();
 		$this->passResetTableMigrate();
 		$response .= $this->runPending();
 
