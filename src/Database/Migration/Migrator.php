@@ -295,7 +295,7 @@ class Migrator
 	 */
 	public function permissionTableMigrate()
 	{
-		$isRoleTableExist = $this->schema->tableExist('role');
+		$isRoleTableExist = $this->schema->tableExist('permissions');
 		if (!$isRoleTableExist) {
 
 			$fileName = "20210408051901_create_permission_table.php";
