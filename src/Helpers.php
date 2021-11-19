@@ -417,6 +417,19 @@ if (!function_exists('gate_denies')) {
     }
 }
 
+if (!function_exists('abort_if')) {
+    /**
+     * abort and display error message
+     * 
+     */
+    function abort_if($denies = 0, $message = '')
+    {
+        if ($denies) {
+            abort(403, $message);
+        }
+    }
+}
+
 /**
  * error codes
  * 
