@@ -1,6 +1,6 @@
 <?php
 
-$create_roles_table = [
+$create_permission_table = [
 	"mode" => "NEW",
 	"table"	=> "permissions",
 	"primary_key" => "id",
