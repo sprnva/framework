@@ -7,6 +7,7 @@ $create_roles_table = [
 	"up" => [
 		"id" => "INT(11) unsigned NOT NULL AUTO_INCREMENT",
 		"role" => "varchar(200) DEFAULT NULL",
+		"permission" => "text NOT NULL",
 		"created_at" => "datetime DEFAULT NULL",
 	],
 	"down" => [
