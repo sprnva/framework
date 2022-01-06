@@ -124,7 +124,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$relationPrimaryColumn = $primaryColumn[1];
 			$implodedIds = implode("','", array_unique($collectedIdFrom[$relationTable]));
 
-			$andFilter = (!empty($this->withFilter))?$this->withFilter[$relationTable]:'';
+			$andFilter = (!empty($this->withFilter[$relationTable]))?$this->withFilter[$relationTable]:'';
 
 			$statement = $this->pdo->prepare("SELECT * FROM `{$relationTable}` WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter}");
 			$statement->execute();
@@ -196,7 +196,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$relationPrimaryColumn = $primaryColumn[1];
 			$implodedIds = implode("','", array_unique($collectedIdFrom[$relationTable]));
 
-			$andFilter = (!empty($this->withFilter))?$this->withFilter[$relationTable]:'';
+			$andFilter = (!empty($this->withFilter[$relationTable]))?$this->withFilter[$relationTable]:'';
 
 			$statement = $this->pdo->prepare("SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`");
 			$statement->execute();
