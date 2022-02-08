@@ -79,7 +79,7 @@ class MigrationRepository
 	public function getLastBatchNumber()
 	{
 		$batch_num = DB()->select("batch", $this->table, "id > 0 ORDER BY batch DESC LIMIT 1")->get();
-		return $batch_num['batch'];
+		return ($batch_num) ? $batch_num['batch'] : 0;
 	}
 
 	/**
