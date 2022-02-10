@@ -79,9 +79,9 @@ class Request
 						$table = $param[0];
 						if ($table != "") {
 
-							$column = $param[1];
-							$except = $param[2];
-							$idColumn = $param[3];
+							$column = (!empty($param[1])) ? $param[1] : '';
+							$except = (!empty($param[2])) ? $param[2] : '';
+							$idColumn = (!empty($param[3])) ? $param[3] : '';
 
 							// if unique:{table}
 							if (empty($column) && empty($except) && empty($idColumn)) {
