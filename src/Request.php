@@ -153,10 +153,10 @@ class Request
 		$post_data['validationError'] = [];
 		$errorList = static::validator($datas);
 		if (!empty($errorList)) {
-			$_SESSION["RESPONSE_MSG"] = $errorList;
 			$post_data['validationError'] = $errorList;
 
 			if ($uri != '') {
+				$_SESSION["RESPONSE_MSG"] = $errorList;
 				redirect($uri);
 			}
 		}
