@@ -4,6 +4,7 @@ namespace App\Core\Routing;
 
 use App\Core\Auth;
 use Exception;
+use App\Core\App;
 use App\Core\Routing\Exception\RoutingException;
 
 class RouteBinding
@@ -58,7 +59,11 @@ class RouteBinding
             }
         }
 
-        throw new RoutingException("No route defined for [{$uri}]", new Exception());
+        if (App::get('config')['app']['environment'] != "development") {
+            abort(404, 'NOT FOUND');
+        } else {
+            throw new RoutingException("No route defined for [{$uri}]", new Exception());
+        }
     }
 
     /**
