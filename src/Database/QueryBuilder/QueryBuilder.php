@@ -75,7 +75,7 @@ class QueryBuilder implements QueryBuilderInterface
 	public function select($columns, $table, $params = '')
 	{
 		try {
-
+			$this->querytype = 'select';
 			$inject = ($params == '') ? "" : "WHERE $params";
 			$statement = $this->pdo->prepare("SELECT {$columns} FROM {$table} {$inject}");
 			$statement->execute();
