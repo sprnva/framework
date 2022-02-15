@@ -5,6 +5,7 @@ namespace App\Core\Database\QueryBuilder;
 use PDO;
 use PDOException;
 use Exception;
+use App\Core\App;
 use App\Core\Filesystem\Filesystem;
 use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
 use RuntimeException;
@@ -23,6 +24,24 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 */
 	private $result;
+
+	/**
+	 * The statement
+	 *
+	 */
+	private $queryStatement;
+
+	/**
+	 * The pagiantion limit
+	 *
+	 */
+	private $paginateLimit;
+
+	/**
+	 * to determine if it's selectLoop
+	 *
+	 */
+	private $querytype;
 
 	/**
 	 * additional where params for with() method
@@ -75,16 +94,11 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function selectLoop($column, $table, $params = '')
 	{
-		try {
-			$inject = ($params == '') ? "" : "WHERE $params";
-			$statement = $this->pdo->prepare("select {$column} from {$table} {$inject}");
-			$statement->execute();
-			$this->listen[] = "select {$column} from {$table} {$inject}";
-			$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
-			return $this;
-		} catch (PDOException $e) {
-			throw new QueryBuilderException($e->getMessage(), $e);
-		}
+		$inject = ($params == '') ? "" : "WHERE $params";
+		$test = "SELECT {$column} FROM {$table} {$inject}";
+		$this->querytype = "selectLoop";
+		$this->queryStatement = $test;
+		return $this;
 	}
 
 	/**
@@ -93,7 +107,19 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function get()
 	{
-		return $this->result;
+		if ($this->querytype == "selectLoop") {
+			try {
+				$statement = $this->pdo->prepare("{$this->queryStatement}");
+				$statement->execute();
+				$this->listen[] = "{$this->queryStatement}";
+				$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
+				return $this->result;
+			} catch (PDOException $e) {
+				throw new QueryBuilderException($e->getMessage(), $e);
+			}
+		} else {
+			return $this->result;
+		}
 	}
 
 	/**
@@ -124,7 +150,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$relationPrimaryColumn = $primaryColumn[1];
 			$implodedIds = implode("','", array_unique($collectedIdFrom[$relationTable]));
 
-			$andFilter = (!empty($this->withFilter[$relationTable]))?$this->withFilter[$relationTable]:'';
+			$andFilter = (!empty($this->withFilter[$relationTable])) ? $this->withFilter[$relationTable] : '';
 
 			$statement = $this->pdo->prepare("SELECT * FROM `{$relationTable}` WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter}");
 			$statement->execute();
@@ -196,7 +222,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$relationPrimaryColumn = $primaryColumn[1];
 			$implodedIds = implode("','", array_unique($collectedIdFrom[$relationTable]));
 
-			$andFilter = (!empty($this->withFilter[$relationTable]))?$this->withFilter[$relationTable]:'';
+			$andFilter = (!empty($this->withFilter[$relationTable])) ? $this->withFilter[$relationTable] : '';
 
 			$statement = $this->pdo->prepare("SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`");
 			$statement->execute();
@@ -409,5 +435,144 @@ class QueryBuilder implements QueryBuilderInterface
 		$memoryUsage = (round(memory_get_peak_usage() / 1024 / 1024));
 
 		return "Success seed! Page generated in {$time_taken} seconds using {$memoryUsage}MB.";
+	}
+
+	public function paginate($per_page = '10')
+	{
+		$this->querytype = "";
+		$limit = isset($_SESSION['per_page']) ? $_SESSION['per_page'] : $per_page;
+		$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
+		$paginationStart = ($page - 1) * $limit;
+
+		$this->paginateLimit = $limit;
+		$this->paginateCurrentPage = $page;
+
+		try {
+			$qStatement = $this->queryStatement;
+			$statement = $this->pdo->prepare("{$qStatement} LIMIT {$paginationStart}, {$limit}");
+			$statement->execute();
+			$this->listen[] = "{$qStatement}";
+			$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
+			return $this;
+		} catch (PDOException $e) {
+			throw new QueryBuilderException($e->getMessage(), $e);
+		}
+	}
+
+	public function links()
+	{
+		$limit = $this->paginateLimit;
+		$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
+
+		// Get total records
+		$allRecrods = count(DB()->query($this->queryStatement, 'Y')->get());
+
+		// Calculate total pages
+		$total_pages = ($allRecrods == 1) ? 1 : ceil($allRecrods / $limit);
+
+		// Prev + Next
+		$prev = $page - 1;
+		$next = $page + 1;
+
+		$disabledPrev = ($page <= 1) ? 'disabled' : '';
+		$disabledNext = ($page >= $total_pages) ? 'disabled' : '';
+
+		$links = "";
+		$links .= '<nav aria-label="Page navigation example mt-5">';
+		$links .= '<ul class="pagination justify-content-center">';
+		$links .= '<li class="page-item ' . $disabledPrev . '">';
+		$links .= '<a class="page-link" href="' . "?page=" . $prev . '">Previous</a>';
+		$links .= '</li>';
+		if ($total_pages >= 1 && $page <= $total_pages) {
+
+			if ($page == 1) {
+				$active1 = 'active';
+				$activeValue1 = 1 . ' <span class="sr-only">(current)</span>';
+			} else {
+				$active1 = '';
+				$activeValue1 = 1;
+			}
+
+			$links .= '<li class="page-item ' . $active1 . '">';
+			$links .= "<a class='page-link' href=\"?page=1\">{$activeValue1}</a>";
+			$links .= '</li>';
+
+			$i = max(2, $page - 3);
+
+			if ($i > 3) {
+				$links .= '<li class="page-item disabled">';
+				$links .= '<a class="page-link" href="">...</a>';
+				$links .= '</li>';
+			}
+
+			for (; $i < min($page + 3, $total_pages); $i++) {
+
+				if ($page == $i) {
+					$active = 'active';
+					$activeValue = $i . ' <span class="sr-only">(current)</span>';
+				} else {
+					$active = '';
+					$activeValue = $i;
+				}
+
+				$links .= '<li class="page-item ' . $active . '">';
+				$links .= "<a class='page-link' href=\"?page={$i}\">{$activeValue}</a>";
+				$links .= '</li>';
+			}
+
+			if ($i < $total_pages) {
+				$links .= '<li class="page-item disabled">';
+				$links .= '<a class="page-link" href="">...</a>';
+				$links .= '</li>';
+
+				$links .= "<a class='page-link' href=\"?page={$total_pages}\">{$total_pages}</a>";
+			}
+		}
+
+		$nextlink = ($page >= $total_pages) ? '#' : "?page=" . $next;
+		$links .= '<li class="page-item ' . $disabledNext . '">';
+		$links .= '<a class="page-link" href="' . $nextlink . '">Next</a>';
+		$links .= '</li>';
+
+		$links .= '</li>';
+		$links .= '</ul>';
+		$links .= '</nav>';
+		return $links;
+	}
+
+	public function linksToArray()
+	{
+		$limit = $this->paginateLimit;
+		$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
+
+		// Get total records
+		$allRecrods = count(DB()->query($this->queryStatement, 'Y')->get());
+
+		// Calculate total pages
+		$total_pages = ($allRecrods == 1) ? 1 : ceil($allRecrods / $limit);
+
+		// Prev + Next
+		$prev = $page - 1;
+		$next = $page + 1;
+
+		$disabledPrev = ($page <= 1) ? 'disabled' : '';
+		$disabledNext = ($page >= $total_pages) ? 'disabled' : '';
+
+		$data = [
+			"total" => $allRecrods,
+			"per_page" => $limit,
+			"current_page" => $page,
+			"last_page" => $total_pages,
+			"first_page_url" => "?page=1",
+			"last_page_url" => "?page=" . $total_pages,
+			"next_page_url" => "?page=" . $next,
+			"prev_page_url" => "?page=" . $prev,
+			"path" => App::get('base_url'),
+			"from" => $page,
+			"to" => $total_pages,
+			"data" => []
+		];
+
+		return $data;
 	}
 }
