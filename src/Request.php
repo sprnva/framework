@@ -354,8 +354,9 @@ class Request
 
 		$tmp_folder = $temp_dir;
 
-		static::ensureUploadsAndTmpFolderExist();
-		Filesystem::makeDirectory($tmp_folder . $folder);
+		if (!Filesystem::exists($tmp_folder . $folder)) {
+			Filesystem::makeDirectory($tmp_folder . $folder);
+		}
 
 		$path = $tmp_folder . $folder . '/' . $filename;
 
