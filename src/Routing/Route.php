@@ -23,6 +23,7 @@ class Route
 	];
 
 	protected static $currentGroupPrefix = '';
+	protected static $currentGroupController = '';
 	protected static $currentGroupMiddleware = [];
 
 	public function __construct()
@@ -39,16 +40,29 @@ class Route
 	public static function addRoute($method, $uri, $callback)
 	{
 		$groupPrefix = static::$currentGroupPrefix;
+		$groupController = static::$currentGroupController;
 
 		if ($groupPrefix == "") {
 			$_uri = $uri;
 
-			$callbackIsCallable = (is_callable($callback)) ? $callback : $callback[0];
-			$middleware = [];
+			$callbackIsCallable = (is_callable($callback))
+				? $callback // if callback is a function
+				: ((is_array($callback))
+					? (($groupController != "")
+						? static::buildAction($callback[0]) // if callback passes through groupController
+						: $callback[0]) // return the callback directly
+					: static::buildAction($callback)); // if string build controller and method
 
-			if (!is_callable($callback)) {
-				if (!empty($callback[1])) {
-					$middleware = $callback[1];
+			$middleware = [];
+			if (!empty(static::$currentGroupMiddleware)) {
+				$middleware = static::$currentGroupMiddleware;
+			} else {
+				if (!is_callable($callback)) {
+					if (is_array($callback)) {
+						if (!empty($callback[1])) {
+							$middleware = $callback[1]; // if callback is array and !empty  element [1]
+						}
+					}
 				}
 			}
 
@@ -59,9 +73,23 @@ class Route
 		} else {
 			$_uri = static::groupUriBuilder($uri);
 
+			$controller = (is_array($callback))
+				? (($groupController != "")
+					? static::buildAction($callback[0]) // if !empty groupController, build controller and method
+					: $callback[0]) // if empty groupController
+				: static::buildAction($callback); // if !array, build controller and method
+
+			$middleware = (!empty(static::$currentGroupMiddleware))
+				? static::$currentGroupMiddleware // check if currentGroupMiddleware is !empty
+				: ((is_array($callback)) // check if callback is array
+					? ((!empty($callback[1])) // if middleware is present
+						? $callback[1] // return middleware array
+						: []) // return empty array
+					: []); // if callback is not array return empty array
+
 			$actions = [
-				"action" => $callback[0],
-				"middleware" => static::$currentGroupMiddleware
+				"action" => $controller,
+				"middleware" => $middleware
 			];
 		}
 
@@ -82,6 +110,11 @@ class Route
 		}
 
 		return $_uri;
+	}
+
+	public static function buildAction($callback)
+	{
+		return static::$currentGroupController . '@' . $callback;
 	}
 
 	/**
@@ -189,5 +222,27 @@ class Route
 	public static function uriCollection()
 	{
 		return static::$routes;
+	}
+
+	/**
+	 * Register a controller group
+	 *
+	 * @param string $controller
+	 * @param mixed $callback
+	 */
+	public static function controller($param, $callback)
+	{
+		$previousGroupController = static::$currentGroupController;
+		$previousGroupMiddleware = static::$currentGroupMiddleware;
+
+		static::$currentGroupController = $param[0];
+		if (empty($previousGroupMiddleware)) {
+			static::$currentGroupMiddleware = (!empty($param[1])) ? $param[1] : [];
+		}
+
+		call_user_func($callback);
+
+		static::$currentGroupController = $previousGroupController;
+		static::$currentGroupMiddleware = $previousGroupMiddleware;
 	}
 }
