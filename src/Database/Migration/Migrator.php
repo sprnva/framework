@@ -214,7 +214,7 @@ class Migrator
 				$handle = fopen($dir, 'w+');
 				fwrite($handle, $content);
 				fclose($handle);
-				chmod(dirname(__DIR__) . "/" . $dir, 0777);
+				chmod(dirname($dir), 0777);
 
 				$response .= nl2br("Created Migration: $migrationName\n-- visit directory database/migrations/\n");
 			} else {
@@ -262,7 +262,7 @@ class Migrator
 				$handle = fopen($dir, 'w+');
 				fwrite($handle, $content);
 				fclose($handle);
-				chmod(dirname(__DIR__) . "/" . $dir, 0777);
+				chmod(dirname($dir), 0777);
 			}
 		}
 	}
@@ -284,7 +284,7 @@ class Migrator
 				$handle = fopen($dir, 'w+');
 				fwrite($handle, $content);
 				fclose($handle);
-				chmod(dirname(__DIR__) . "/" . $dir, 0777);
+				chmod(dirname($dir), 0777);
 			}
 		}
 	}
@@ -306,7 +306,7 @@ class Migrator
 				$handle = fopen($dir, 'w+');
 				fwrite($handle, $content);
 				fclose($handle);
-				chmod(dirname(__DIR__) . "/" . $dir, 0777);
+				chmod(dirname($dir), 0777);
 			}
 		}
 	}
@@ -328,7 +328,7 @@ class Migrator
 				$handle = fopen($dir, 'w+');
 				fwrite($handle, $content);
 				fclose($handle);
-				chmod(dirname(__DIR__) . "/" . $dir, 0777);
+				chmod(dirname($dir), 0777);
 			}
 		}
 	}
@@ -350,7 +350,7 @@ class Migrator
 	{
 		if (!file_exists($this->migrationFiles)) {
 			mkdir($this->migrationFiles);
-			chmod(dirname(__DIR__) . "/" . $this->migrationFiles, 0777);
+			chmod(dirname($this->migrationFiles), 0777);
 		}
 	}
 
@@ -362,7 +362,7 @@ class Migrator
 	{
 		if (!file_exists($this->schemaFiles)) {
 			mkdir($this->schemaFiles);
-			chmod(dirname(__DIR__) . "/" . $this->schemaFiles, 0777);
+			chmod(dirname($this->schemaFiles), 0777);
 		}
 	}
 
