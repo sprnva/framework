@@ -392,7 +392,7 @@ if (!function_exists('abort')) {
 
 if (!function_exists('gate_denies')) {
     /**
-     * abort and display error message
+     * checks the user permission
      * 
      */
     function gate_denies($access = '', $message = '')
@@ -419,7 +419,7 @@ if (!function_exists('gate_denies')) {
 
 if (!function_exists('abort_if')) {
     /**
-     * abort and display error message
+     *abort if the gate denies
      * 
      */
     function abort_if($denies = 0, $message = '')

@@ -12,6 +12,7 @@ $create_users_table = [
 		"password" => "text NOT NULL",
 		"role_id" => "int(11) DEFAULT NULL",
 		"remember_token" => "VARCHAR(100) NULL DEFAULT NULL",
+		"avatar" => "TEXT DEFAULT NULL",
 		"updated_at" => "datetime DEFAULT NULL",
 		"created_at" => "datetime DEFAULT NULL",
 	],
