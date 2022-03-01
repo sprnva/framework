@@ -133,7 +133,9 @@ class QueryBuilder implements QueryBuilderInterface
 		if (!empty($this->result)) {
 			$currentTableDatas = $this->result;
 		} else {
-			$currentTableDatas = DB()->query($this->queryStatement, 'Y')->get();
+			$currentTableDatas = ($this->queryStatement != "")
+				? DB()->query($this->queryStatement, 'Y')->get()
+				: '';
 		}
 
 		$collectedIdFrom = [];
@@ -212,7 +214,9 @@ class QueryBuilder implements QueryBuilderInterface
 		if (!empty($this->result)) {
 			$currentTableDatas = $this->result;
 		} else {
-			$currentTableDatas = DB()->query($this->queryStatement, 'Y')->get();
+			$currentTableDatas = ($this->queryStatement != "")
+				? DB()->query($this->queryStatement, 'Y')->get()
+				: '';
 		}
 
 		$collectedIdFrom = [];
