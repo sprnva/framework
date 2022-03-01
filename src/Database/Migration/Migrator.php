@@ -3,14 +3,15 @@
 namespace App\Core\Database\Migration;
 
 use App\Core\App;
+use App\Core\Filesystem\Filesystem;
 
 class Migrator
 {
 	public function __construct()
 	{
-		$this->migrationFiles = "database/migrations/";
-		$this->schemaFiles = "database/schema/";
-		$this->stubsPath = "vendor/sprnva/framework/src/Database/Migration/stubs/";
+		$this->migrationFiles = basepath() . "database/migrations/";
+		$this->schemaFiles = basepath() . "database/schema/";
+		$this->stubsPath = vendorpath() . "sprnva/framework/src/Database/Migration/stubs/";
 		$this->schemaName = "mysql-schema.sql";
 
 		$this->table = "migrations";
@@ -211,10 +212,7 @@ class Migrator
 		if ($this->isUniqueFileName($varName)) {
 			$content = $this->populateStub($this->stubsPath . "migrations.stubs", $varName);
 			if (!file_exists($dir)) {
-				$handle = fopen($dir, 'w+');
-				fwrite($handle, $content);
-				fclose($handle);
-				chmod(dirname($dir), 0777);
+				Filesystem::put($dir, $content);
 
 				$response .= nl2br("Created Migration: $migrationName\n-- visit directory database/migrations/\n");
 			} else {
@@ -237,7 +235,7 @@ class Migrator
 		if ($this->isFile($path)) {
 
 			// Let's read the stubs file to string
-			$stub = file_get_contents($path);
+			$stub = Filesystem::get($path);
 
 			// Here we will replace the table place-holders 
 			// with the variable name specified.
@@ -256,13 +254,10 @@ class Migrator
 
 			$fileName = "20210408051901_create_users_table.php";
 			$dir = $this->migrationFiles . $fileName;
-			$content = file_get_contents($this->stubsPath . "user_migration.stubs");
+			$content = Filesystem::get($this->stubsPath . "user_migration.stubs");
 
 			if (!file_exists($dir)) {
-				$handle = fopen($dir, 'w+');
-				fwrite($handle, $content);
-				fclose($handle);
-				chmod(dirname($dir), 0777);
+				Filesystem::put($dir, $content);
 			}
 		}
 	}
@@ -278,13 +273,10 @@ class Migrator
 
 			$fileName = "20210408051901_create_roles_table.php";
 			$dir = $this->migrationFiles . $fileName;
-			$content = file_get_contents($this->stubsPath . "user_roles.stubs");
+			$content = Filesystem::get($this->stubsPath . "user_roles.stubs");
 
 			if (!file_exists($dir)) {
-				$handle = fopen($dir, 'w+');
-				fwrite($handle, $content);
-				fclose($handle);
-				chmod(dirname($dir), 0777);
+				Filesystem::put($dir, $content);
 			}
 		}
 	}
@@ -300,13 +292,10 @@ class Migrator
 
 			$fileName = "20210408051901_create_permission_table.php";
 			$dir = $this->migrationFiles . $fileName;
-			$content = file_get_contents($this->stubsPath . "permissions.stubs");
+			$content = Filesystem::get($this->stubsPath . "permissions.stubs");
 
 			if (!file_exists($dir)) {
-				$handle = fopen($dir, 'w+');
-				fwrite($handle, $content);
-				fclose($handle);
-				chmod(dirname($dir), 0777);
+				Filesystem::put($dir, $content);
 			}
 		}
 	}
@@ -322,13 +311,10 @@ class Migrator
 
 			$fileName = "20210408051901_create_password_resets_table.php";
 			$dir = $this->migrationFiles . $fileName;
-			$content = file_get_contents($this->stubsPath . "password_resets.stubs");
+			$content = Filesystem::get($this->stubsPath . "password_resets.stubs");
 
 			if (!file_exists($dir)) {
-				$handle = fopen($dir, 'w+');
-				fwrite($handle, $content);
-				fclose($handle);
-				chmod(dirname($dir), 0777);
+				Filesystem::put($dir, $content);
 			}
 		}
 	}
@@ -349,8 +335,7 @@ class Migrator
 	public function ensureMigrationBinExist()
 	{
 		if (!file_exists($this->migrationFiles)) {
-			mkdir($this->migrationFiles);
-			chmod(dirname($this->migrationFiles), 0777);
+			Filesystem::makeDirectory($this->migrationFiles);
 		}
 	}
 
@@ -361,8 +346,7 @@ class Migrator
 	public function ensureSchemaBinExist()
 	{
 		if (!file_exists($this->schemaFiles)) {
-			mkdir($this->schemaFiles);
-			chmod(dirname($this->schemaFiles), 0777);
+			Filesystem::makeDirectory($this->schemaFiles);
 		}
 	}
 

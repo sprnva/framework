@@ -544,5 +544,25 @@ function fortified()
     return file_exists('vendor/sprnva/fortify');
 }
 
+/**
+ * get the app root directory
+ * 
+ * @return string
+ */
+function basepath()
+{
+    return $_SERVER['DOCUMENT_ROOT'] . App::get('base_url') . "/";
+}
+
+/**
+ * get the app vendor directory
+ * 
+ * @return string
+ */
+function vendorpath()
+{
+    return $_SERVER['DOCUMENT_ROOT'] . App::get('base_url') . '/vendor/';
+}
+
 // add additional helper functions from the users
 require __DIR__ . '/../../../../config/function.helpers.php';
