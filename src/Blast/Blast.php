@@ -133,6 +133,8 @@ class Blast
         $r_uri = $_SERVER['REQUEST_URI'];
         $cur_dir = __DIR__;
 
+        $app_version = "Sprnva v" . appversion() . " (PHP v" . phpversion() . ")";
+
         $coat = str_replace(
             [
                 '{{$title}}',
@@ -148,7 +150,8 @@ class Blast
                 '{{popper}}',
                 '{{bstrap}}',
                 '{{$r_uri}}',
-                '{{$cur_dir}}'
+                '{{$cur_dir}}',
+                '{{$app_version}}'
             ],
             [
                 $title,
@@ -164,7 +167,8 @@ class Blast
                 $popper,
                 $bstrap,
                 $r_uri,
-                $cur_dir
+                $cur_dir,
+                $app_version
             ],
             $viewStub
         );

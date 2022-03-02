@@ -137,8 +137,14 @@
     <div class='row justify-content-md-center'>
         <div class='col-md-12'>
             <div class='card' style='margin-top: 2%;margin-bottom: 5%;background-color: #fff; border: 2px solid #e1dfdf; border-radius: 3px;'>
-                <div class='card-header' style='padding: 15px;background-color: #1e4d1a;color: #fff;'>
-                    Sprnva Blast : Stack Trace
+                <div class='d-flex flex-row justify-content-between card-header' style='padding: 15px;background-color: #1e4d1a;color: #fff;'>
+                    <div>
+                        Sprnva Blast : Stack Trace
+                    </div>
+                    <div>
+                        <small style='font-size: 14px;font-weight: 700;'>{{$app_version}}</small>
+
+                    </div>
                 </div>
                 <div class='card-body d-flex flex-column' style="padding-top: 0px;padding-bottom: 0px;padding-left: 14px;padding-right: 14px;">
 
