@@ -32,11 +32,9 @@ class Filesystem implements FilesystemInterface
     public static function makeDirectory($path, $mode = 0755, $recursive = false, $force = false)
     {
         if ($force) {
-            chmod(dirname($path), $mode);
             return @mkdir($path, $mode, $recursive);
         }
 
-        chmod(dirname($path), $mode);
         return mkdir($path, $mode, $recursive);
     }
 
