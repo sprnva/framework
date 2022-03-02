@@ -6,10 +6,18 @@
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <link rel='icon' href='{{icon}}' type='image/ico'>
     <title>{{$title}}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel='stylesheet' href='{{custFont}}'>
+    <link rel='stylesheet' href='{{hjscss}}'>
+    <script src='{{hjsscript}}'></script>
     <link rel='stylesheet' href='{{css}}'>
     <style>
         body {
+            font-family: 'Fira Code', monospace;
             background-color: #eef1f4;
+            font-weight: 700;
             color: #2c6727;
         }
 
@@ -19,7 +27,10 @@
         }
 
         .line-number {
-            background-color: #d9ecd9;
+            /*background-color: #d9ecd9;*/
+            background-color: #fff;
+            font-weight: 700;
+            color: #7a7a7a;
             text-align: center;
             padding: 3px 7px 3px 7px;
             position: sticky;
@@ -28,6 +39,7 @@
         }
 
         .line-content {
+            padding: 4px;
             font-size: 1em;
         }
 
@@ -40,7 +52,8 @@
         }
 
         .line-err {
-            background-color: #00800054 !important;
+            /* background-color: #00800054 !important; */
+            background-color: #dc354530 !important;
         }
 
         .list-group-item {
@@ -71,6 +84,36 @@
             display: flex;
             flex-direction: column;
         }
+
+        .hljs {
+            background: transparent;
+            color: #444;
+        }
+
+        pre code.hljs {
+            padding: 0em;
+        }
+
+        code.hljs {
+            font-weight: 700;
+            padding: 0px;
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: 'Fira Code', monospace;
+        }
+
+        ._line:hover {
+            background-color: #00800054 !important;
+            cursor: default;
+        }
+
+        ._line:hover>.line-number {
+            background-color: #73b973 !important;
+        }
     </style>
     <script src='{{jquery}}'></script>
     <script src='{{popper}}'></script>
@@ -83,8 +126,9 @@
             <div class='card' style='margin-top: 5%;background-color: #fff; border: 2px solid #e1dfdf; border-radius: 3px; padding: 10px;'>
                 <div class='card-body d-flex flex-column' style='padding: 50px;'>
                     <p class='text-muted' style='margin: 0px;font-size: 18px;''>{{$exceptionClass}}</p>
-                    <p class='' style=' font-size: 30px;font-weight: 500;'>{{$message}}</p>
-                    <small class='text-muted' style='font-size: 14px;'>{{$r_uri}}</small>
+                    <p class='' style=' font-size: 26px;'>{{$message}}</p>
+                    <small class='text-muted' style='font-size: 14px;font-weight: 700;'>{{$r_uri}}</small>
+
                 </div>
             </div>
         </div>
@@ -122,5 +166,8 @@
 </div>
 
 </body>
+<script>
+    hljs.highlightAll();
+</script>
 
 </html>
