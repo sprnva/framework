@@ -21,6 +21,15 @@
             color: #2c6727;
         }
 
+        body::-webkit-scrollbar {
+            width: 5px;
+            background-color: transparent;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background-color: #254546;
+        }
+
         pre {
             margin: 0px;
             margin-left: 30px;
