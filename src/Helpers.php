@@ -121,13 +121,16 @@ function route($route, $data = "")
  * @param string $data
  * @param bool $trim
  */
-function sanitizeString($data, $trim = true)
+function sanitizeString($data, $stripslashes = true, $trim = true)
 {
     if ($trim) {
         $data = trim($data);
     }
 
-    $data = stripslashes($data);
+    if ($stripslashes) {
+        $data = stripslashes($data);
+    }
+
     $data = htmlspecialchars($data);
 
     return $data;

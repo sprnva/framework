@@ -20,35 +20,27 @@ class Blast
         $fileContent = "";
         $fileContent .= "<div class='tab-pane fade show " . $active . "' id='" . $tabId . "' role='tabpanel' aria-labelledby='" . $tabId . "-tab'>";
         $fileContent .= "<div style='padding: 0px 28px;'>";
-        $fileContent .= "<p class='text-muted' style='font-size: 14px;margin: 0px;'>" . $displayClass . $funct . "</p>";
-        $fileContent .= "<p style='font-size: 14px;font-weight: 300;'><span style='word-break: break-all;font-size: 16px'>{$traceFile}</span><span style='font-weight: 600;'>:{$err_line}</span></p>";
+        $fileContent .= "<p class='text-muted' style='font-size: 13px;margin: 0px;font-weight: 500;'>" . $displayClass . $funct . "</p>";
+        $fileContent .= "<p style='font-size: 14px;font-weight: 300;'><span style='word-break: break-all;font-size: 15px;color: #949FAF;'>{$traceFile}</span><span style='font-weight: 600;color: #949FAF;'>:{$err_line}</span></p>";
         $fileContent .= "</div>";
-        $fileContent .= "<div style='overflow: hidden;overflow-x: auto;overflow-y: auto;padding: 0px;'><table style='border-top: 1px solid #dedddd;width: 100%;'>";
-        $fileContent .= "<tr>";
-        $fileContent .= "<td class='line-number'>&nbsp;</td>";
-        $fileContent .= "<td class='line-content'><pre><code>&nbsp;</code></pre></td>";
-        $fileContent .= "</tr>";
+        $fileContent .= "<div class='content-scrolls' style='overflow: hidden;overflow-x: auto;overflow-y: auto;padding: 0px;'><table style='border-top: 0px solid #dedddd;width: 100%;'>";
 
         for ($x = $lineOFfset; $x < $lineLength; $x++) {
             if (!empty($lineTxt[$x]) || $x == ($err_line - 1)) {
                 if (($err_line - 1) === $x) {
                     $fileContent .= "<tr class='line-err'>";
-                    $fileContent .= "<td class='line-number' style='/*background-color: #73b973 !important;*/background-color: #ffa7af !important;'>" . ($x + 1) . "</td>";
-                    $fileContent .= "<td class='line-content'><pre><code>" . sanitizeString($lineTxt[$x], false) . "</code></pre></td>";
+                    $fileContent .= "<td class='line-number' style='/*background-color: #73b973 !important;*/background-color: #78464a !important;'>" . ($x + 1) . "</td>";
+                    $fileContent .= "<td class='line-content'><pre><code class='hljs language-php'>" . sanitizeString($lineTxt[$x], false, false) . "</code></pre></td>";
                     $fileContent .= "</tr>";
                 } else {
                     $fileContent .= "<tr class='_line'>";
                     $fileContent .= "<td class='line-number'>" . ($x + 1) . "</td>";
-                    $fileContent .= "<td class='line-content'><pre><code>" . sanitizeString($lineTxt[$x], false) . "</code></pre></td>";
+                    $fileContent .= "<td class='line-content'><pre><code class='hljs language-php'>" . sanitizeString($lineTxt[$x], false, false) . "</code></pre></td>";
                     $fileContent .= "</tr>";
                 }
             }
         }
 
-        $fileContent .= "<tr>";
-        $fileContent .= "<td class='line-number'>&nbsp;</td>";
-        $fileContent .= "<td class='line-content'><pre><code>&nbsp;</code></pre></td>";
-        $fileContent .= "</tr>";
         $fileContent .= "</table></div>";
         $fileContent .= "</div>";
 
@@ -57,7 +49,7 @@ class Blast
 
     public static function selectiveStr($mainString)
     {
-        $prefix = "sprnva";
+        $prefix = App::get('base_url'); // "sprnva";
         $index = strpos($mainString, $prefix) + (strlen($prefix) + 1);
         $result = substr($mainString, $index);
         return $result;
@@ -75,13 +67,13 @@ class Blast
 
             $active = ($counter == 1) ? 'active' : '';
 
-            $showClass = (!empty($trace['class'])) ? "<small class='text-muted mt-2' style='font-size: 96%; font-weight: 400;'>" . $trace['class'] . "</small>" : "";
+            $showClass = (!empty($trace['function'])) ? "<small class='text-muted mt-2' style='font-size: 96%; font-weight: 400;'>" . $trace['function'] . "</small>" : "";
 
             $result = $self::selectiveStr($trace['file']);
 
             if (!empty($trace['line'])) {
 
-                $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":" . $trace['line'] . "</div></div>" . $showClass . "</a>";
+                $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;color: #b7b7b7;font-weight: 500;'><div style=''>" . $result . ":" . $trace['line'] . "</div></div>" . $showClass . "</a>";
             }
 
             $fileContent .= $self::getLineContent($trace['line'], $trace['file'], $counter, $trace['class'], $trace['function']);
@@ -110,7 +102,7 @@ class Blast
 
         if (!empty($file)) {
 
-            $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;'><div style=''>" . $result . ":" . $line . "</div></div></a>";
+            $traceContent .= "<a class='nav-link " . $active . "' id='" . $counter . "-tab' data-toggle='pill' href='#" . $counter . "' role='tab' aria-controls='" . $counter . "' aria-selected='true'><div style='display: flex;flex-direction: row;justify-content: space-between;align-items: center;color: #b7b7b7;font-weight: 500;'><div style=''>" . $result . ":" . $line . "</div></div></a>";
         }
 
         $fileContent .= $self::getLineContent($line, $file, $counter, $_class, $_function);
