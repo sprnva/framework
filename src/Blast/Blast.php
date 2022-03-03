@@ -55,10 +55,8 @@ class Blast
 
     public static function selectiveStr($mainString)
     {
-        $prefix = App::get('base_url'); // "sprnva";
-        $index = strpos($mainString, $prefix) + (strlen($prefix) + 1);
-        $result = substr($mainString, $index);
-        return $result;
+        $prefix = App::get('base_url');
+        return strstr($mainString, substr($prefix, 1));
     }
 
     public static function scaffoldException($message = null, $exeption = null, $exceptionClass = null)
