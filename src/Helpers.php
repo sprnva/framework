@@ -7,6 +7,7 @@ $_SERVER['EXCEPTION'] = 0;
 
 use App\Core\App;
 use App\Core\BcryptHasher;
+use App\Core\Blast;
 use App\Core\Request;
 use App\Core\Error;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -14,7 +15,7 @@ use PHPMailer\PHPMailer\SMTP;
 use App\Core\Dumper;
 use PHPMailer\PHPMailer\Exception;
 
-require __DIR__  . '/Kernel/ErrorKernel.php';
+Blast::listen();
 
 Request::csrf_token();
 

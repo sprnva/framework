@@ -18,10 +18,16 @@ class BaseException
 
         $_SERVER['EXCEPTION'] = 1;
 
-        if ($this->exception != null && $getLastError == null) {
-            return Blast::scaffoldException($this->message, $this->exception, $this->exceptionClass);
+        if ($getLastError['type'] == E_PARSE) {
+            $_exceptionClass = "ParseError";
         } else {
-            return Blast::scaffoldError($this->message, $this->getLastError, $this->exceptionClass);
+            $_exceptionClass = $this->exceptionClass;
+        }
+
+        if ($this->exception != null && $getLastError == null) {
+            return Blast::scaffoldException($this->message, $this->exception, $_exceptionClass);
+        } else {
+            return Blast::scaffoldError($this->message, $this->getLastError, $_exceptionClass);
         }
     }
 }

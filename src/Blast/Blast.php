@@ -3,10 +3,16 @@
 namespace App\Core;
 
 use App\Core\App;
+use App\Core\Kernel;
 use App\Core\Filesystem\Filesystem;
 
 class Blast
 {
+    public static function listen()
+    {
+        Kernel::make();
+    }
+
     public static function getLineContent($err_line, $err_file, $tabId, $class, $funct)
     {
         $self = new static;
