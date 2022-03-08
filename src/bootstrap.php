@@ -9,7 +9,7 @@ use App\Core\Database\Connection\Connection;
 
 $config_file = 'config.php';
 if (!file_exists($config_file)) {
-    dd('The [config.php] not found.');
+    abort("Hold!", "not found [config.php]");
 }
 
 require $config_file;
