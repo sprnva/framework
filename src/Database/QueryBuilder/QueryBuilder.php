@@ -32,6 +32,12 @@ class QueryBuilder implements QueryBuilderInterface
 	private $queryStatement;
 
 	/**
+	 * The paginate statement
+	 *
+	 */
+	private $paginateStatement;
+
+	/**
 	 * The pagiantion limit
 	 *
 	 */
@@ -110,9 +116,14 @@ class QueryBuilder implements QueryBuilderInterface
 	{
 		if ($this->querytype == "selectLoop") {
 			try {
-				$statement = $this->pdo->prepare("{$this->queryStatement}");
+
+				$query_statement = ($this->paginateStatement != "")
+					? $this->paginateStatement
+					: $this->queryStatement;
+
+				$statement = $this->pdo->prepare("{$query_statement}");
 				$statement->execute();
-				$this->listen[] = "{$this->queryStatement}";
+				$this->listen[] = "{$query_statement}";
 				$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
 				return $this->result;
 			} catch (PDOException $e) {
@@ -131,7 +142,12 @@ class QueryBuilder implements QueryBuilderInterface
 	public function with($params = [])
 	{
 		if ($this->querytype == "selectLoop") {
-			$currentTableDatas = DB()->query($this->queryStatement, 'Y')->get();
+
+			$query_statement = ($this->paginateStatement != "")
+				? $this->paginateStatement
+				: $this->queryStatement;
+
+			$currentTableDatas = DB()->query($query_statement, 'Y')->get();
 		} else {
 			$currentTableDatas = $this->result;
 		}
@@ -210,7 +226,12 @@ class QueryBuilder implements QueryBuilderInterface
 	public function withCount($params = [])
 	{
 		if ($this->querytype == "selectLoop") {
-			$currentTableDatas = DB()->query($this->queryStatement, 'Y')->get();
+
+			$query_statement = ($this->paginateStatement != "")
+				? $this->paginateStatement
+				: $this->queryStatement;
+
+			$currentTableDatas = DB()->query($query_statement, 'Y')->get();
 		} else {
 			$currentTableDatas = $this->result;
 		}
@@ -463,7 +484,7 @@ class QueryBuilder implements QueryBuilderInterface
 		$this->paginateLimit = $limit;
 		$this->paginateCurrentPage = $page;
 
-		$this->queryStatement = $this->queryStatement . " LIMIT {$paginationStart}, {$limit}";
+		$this->paginateStatement = $this->queryStatement . " LIMIT {$paginationStart}, {$limit}";
 		return $this;
 	}
 
