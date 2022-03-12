@@ -32,6 +32,12 @@ class QueryBuilder implements QueryBuilderInterface
 	private $queryStatement;
 
 	/**
+	 * The paginate statement
+	 *
+	 */
+	private $paginateStatement;
+
+	/**
 	 * The pagiantion limit
 	 *
 	 */
@@ -79,6 +85,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$inject = ($params == '') ? "" : "WHERE $params";
 			$statement = $this->pdo->prepare("SELECT {$columns} FROM {$table} {$inject}");
 			$statement->execute();
+			$this->queryStatement = "SELECT {$columns} FROM {$table} {$inject}";
 			$this->listen[] = "SELECT {$columns} FROM {$table} {$inject}";
 			$this->result = $statement->fetch(PDO::FETCH_ASSOC);
 			return $this;
@@ -109,9 +116,14 @@ class QueryBuilder implements QueryBuilderInterface
 	{
 		if ($this->querytype == "selectLoop") {
 			try {
-				$statement = $this->pdo->prepare("{$this->queryStatement}");
+
+				$query_statement = ($this->paginateStatement != "")
+					? $this->paginateStatement
+					: $this->queryStatement;
+
+				$statement = $this->pdo->prepare("{$query_statement}");
 				$statement->execute();
-				$this->listen[] = "{$this->queryStatement}";
+				$this->listen[] = "{$query_statement}";
 				$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
 				return $this->result;
 			} catch (PDOException $e) {
@@ -129,13 +141,15 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function with($params = [])
 	{
-		// $currentTableDatas = $this->result;
-		if (!empty($this->result)) {
-			$currentTableDatas = $this->result;
+		if ($this->querytype == "selectLoop") {
+
+			$query_statement = ($this->paginateStatement != "")
+				? $this->paginateStatement
+				: $this->queryStatement;
+
+			$currentTableDatas = DB()->query($query_statement, 'Y')->get();
 		} else {
-			$currentTableDatas = ($this->queryStatement != "")
-				? DB()->query($this->queryStatement, 'Y')->get()
-				: '';
+			$currentTableDatas = $this->result;
 		}
 
 		$collectedIdFrom = [];
@@ -200,7 +214,7 @@ class QueryBuilder implements QueryBuilderInterface
 		}
 
 
-		$this->querytype = "";
+		$this->querytype = "with";
 		$this->result = $newResultSet;
 		return $this;
 	}
@@ -211,12 +225,15 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function withCount($params = [])
 	{
-		if (!empty($this->result)) {
-			$currentTableDatas = $this->result;
+		if ($this->querytype == "selectLoop") {
+
+			$query_statement = ($this->paginateStatement != "")
+				? $this->paginateStatement
+				: $this->queryStatement;
+
+			$currentTableDatas = DB()->query($query_statement, 'Y')->get();
 		} else {
-			$currentTableDatas = ($this->queryStatement != "")
-				? DB()->query($this->queryStatement, 'Y')->get()
-				: '';
+			$currentTableDatas = $this->result;
 		}
 
 		$collectedIdFrom = [];
@@ -261,7 +278,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$newResultSet[] = $currentTableData;
 		}
 
-		$this->querytype = "";
+		$this->querytype = "withCount";
 		$this->result = $newResultSet;
 		return $this;
 	}
@@ -460,7 +477,6 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function paginate($per_page = '10')
 	{
-		$this->querytype = "";
 		$limit = isset($_SESSION['per_page']) ? $_SESSION['per_page'] : $per_page;
 		$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
 		$paginationStart = ($page - 1) * $limit;
@@ -468,16 +484,8 @@ class QueryBuilder implements QueryBuilderInterface
 		$this->paginateLimit = $limit;
 		$this->paginateCurrentPage = $page;
 
-		try {
-			$qStatement = $this->queryStatement;
-			$statement = $this->pdo->prepare("{$qStatement} LIMIT {$paginationStart}, {$limit}");
-			$statement->execute();
-			$this->listen[] = "{$qStatement}";
-			$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
-			return $this;
-		} catch (PDOException $e) {
-			throw new QueryBuilderException($e->getMessage(), $e);
-		}
+		$this->paginateStatement = $this->queryStatement . " LIMIT {$paginationStart}, {$limit}";
+		return $this;
 	}
 
 	public function links()
