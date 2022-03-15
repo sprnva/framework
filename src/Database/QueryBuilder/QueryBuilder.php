@@ -494,6 +494,7 @@ class QueryBuilder implements QueryBuilderInterface
 		$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
 
 		// Get total records
+		$this->querytype = "pagelinks";
 		$allRecrods = count(DB()->query($this->queryStatement, 'Y')->get());
 
 		// Calculate total pages
