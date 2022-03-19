@@ -101,6 +101,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function selectLoop($column, $table, $params = '')
 	{
+		$this->paginateStatement = "";
 		$inject = ($params == '') ? "" : "WHERE $params";
 		$test = "SELECT {$column} FROM {$table} {$inject}";
 		$this->querytype = "selectLoop";
