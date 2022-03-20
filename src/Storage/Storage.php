@@ -31,9 +31,17 @@ class Storage
      * @return bool
      *
      */
-    public static function hasFile($file)
+    public static function hasFile($file, $multiIndex = '')
     {
-        if ($_FILES[$file]['size'] == 0 && $_FILES[$file]['error'] == 0) {
+        $sizeConf = ($multiIndex == '')
+            ? $_FILES[$file]['size']
+            : $_FILES[$file]['size'][$multiIndex];
+
+        $erroConf = ($multiIndex == '')
+            ? $_FILES[$file]['error']
+            : $_FILES[$file]['error'][$multiIndex];
+
+        if ($sizeConf == 0 && $erroConf == 0) {
             return false;
         }
 
@@ -45,12 +53,13 @@ class Storage
      *
      * @return float
      */
-    public function getSize($inUnit = 'kb')
+    public function getSize($multiIndex = '', $inUnit = 'kb')
     {
+        $file = $this->scaffoldIndex('size', $multiIndex);
         if ($inUnit == 'mb') {
-            $size = ($this->fileCollected['size'] / 1000000) . " MB";
+            $size = ($file / 1000000) . " MB";
         } else {
-            $size = ($this->fileCollected['size'] / 1000) . " KB";
+            $size = ($file / 1000) . " KB";
         }
 
         return $size;
@@ -61,9 +70,9 @@ class Storage
      *
      * @return string
      */
-    public function getExtension()
+    public function getExtension($multiIndex = '')
     {
-        $file_type = explode('.', $this->fileCollected['name']);
+        $file_type = explode('.', $this->scaffoldIndex('name', $multiIndex));
         $file_type_end = end($file_type);
 
         return $file_type_end;
@@ -74,9 +83,9 @@ class Storage
      *
      * @return string
      */
-    public function getName()
+    public function getName($multiIndex = '')
     {
-        $file_name = explode('_', str_replace(array('.', ' ', ',', '-'), '_', $this->fileCollected['name']));
+        $file_name = explode('_', str_replace(array('.', ' ', ',', '-'), '_', $this->scaffoldIndex('name', $multiIndex)));
         array_pop($file_name);
 
         return implode('_', $file_name);
@@ -87,9 +96,9 @@ class Storage
      *
      * @return string
      */
-    public function getOriginalName()
+    public function getOriginalName($multiIndex = '')
     {
-        return $this->fileCollected['name'];
+        return $this->scaffoldIndex('name', $multiIndex);
     }
 
     /**
@@ -97,9 +106,9 @@ class Storage
      *
      * @return string
      */
-    public function getTmpFile()
+    public function getTmpFile($multiIndex = '')
     {
-        return $this->fileCollected['tmp_name'];
+        return $this->scaffoldIndex('tmp_name', $multiIndex);
     }
 
     /**
@@ -156,9 +165,9 @@ class Storage
      *
      * @return string
      */
-    public function type()
+    public function type($multiIndex = '')
     {
-        return $this->fileCollected['type'];
+        return $this->scaffoldIndex('type', $multiIndex);
     }
 
     /**
@@ -178,5 +187,14 @@ class Storage
         }
 
         return $_avatar;
+    }
+
+    public function scaffoldIndex($indexName, $multiIndex = '')
+    {
+        $file = ($multiIndex == '')
+            ? $this->fileCollected[$indexName]
+            : $this->fileCollected[$indexName][$multiIndex];
+
+        return $file;
     }
 }
