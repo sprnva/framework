@@ -191,7 +191,7 @@ class Storage
 
     public function scaffoldIndex($indexName, $multiIndex = '')
     {
-        $file = ($multiIndex == '' && is_numeric(intval($multiIndex)) == false)
+        $file = ($multiIndex == '' || is_numeric(intval($multiIndex)) == false)
             ? $this->fileCollected[$indexName]
             : $this->fileCollected[$indexName][intval($multiIndex)];
 
