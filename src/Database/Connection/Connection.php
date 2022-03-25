@@ -15,21 +15,20 @@ class Connection implements ConnectionInterface
 	 */
 	public static function make($config)
 	{
-		$driver = isset($config['driver']) ? $config['driver'] : 'mysql';
-		$host = isset($config['host']) ? $config['host'] : 'localhost';
-		$port = isset($config['port'])
-			? $config['port']
-			: (strstr($config['host'], ':') ? explode(':', $config['host'])[1] : '');
-		$charset = 'utf8';
-		$collation = isset($config['collation']) ? $config['collation'] : 'utf8mb4_general_ci';
+		$driver = $config['driver'];
+		$host = $config['connection'];
+		$port = $config['port'];
+		$charset = $config['charset'];
+		$collation = $config['collation'];
+		$database = $config['name'];
 
 		$dsn = '';
 		if (in_array($driver, ['', 'mysql', 'pgsql'])) {
-			$dsn = $driver . ':host=' . str_replace(':' . $port, '', $host) . ';' . ($port !== '' ? 'port=' . $port . ';' : '') . 'dbname=' . $config['database'];
+			$dsn = $driver . ':host=' . str_replace(':' . $port, '', $host) . ';' . ($port !== '' ? 'port=' . $port . ';' : '') . 'dbname=' . $database;
 		} elseif ($driver === 'sqlite') {
-			$dsn = 'sqlite:' . $config['database'];
+			$dsn = 'sqlite:' . $database;
 		} elseif ($driver === 'oracle') {
-			$dsn = 'oci:dbname=' . $host . '/' . $config['database'];
+			$dsn = 'oci:dbname=' . $host . '/' . $database;
 		}
 
 		try {

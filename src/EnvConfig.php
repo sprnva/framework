@@ -2,6 +2,7 @@
 
 return [
 	'database' => [
+
 		# Database Driver Type (optional)
 		# default value: mysql
 		# values: mysql, pgsql, sqlite, oracle
