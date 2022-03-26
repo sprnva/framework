@@ -6,6 +6,7 @@ date_default_timezone_set('Asia/Manila');
 use App\Core\App;
 use App\Core\Database\QueryBuilder\QueryBuilder;
 use App\Core\Database\Connection\Connection;
+use App\Core\DB\DB;
 
 $config_file = 'config.php';
 if (!file_exists($config_file)) {
@@ -25,6 +26,10 @@ App::bind(
 
 if (App::get('config')['database']['name'] != '') {
     App::bind('database', new QueryBuilder(
+        Connection::make(App::get('config')['database'])
+    ));
+
+    App::bind('db', new DB(
         Connection::make(App::get('config')['database'])
     ));
 }

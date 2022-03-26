@@ -350,6 +350,17 @@ if (!function_exists('db')) {
     }
 }
 
+if (!function_exists('database')) {
+    /**
+     * database connection instance
+     * 
+     */
+    function database()
+    {
+        return App::get('db');
+    }
+}
+
 if (!function_exists('abort')) {
     /**
      * abort and display error message
