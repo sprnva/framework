@@ -36,8 +36,7 @@ class SchemaFactory
 		$create_structure .= "PRIMARY KEY (`$primary`) USING BTREE
 		)
 		COLLATE='latin1_swedish_ci'
-		ENGINE=$engine
-		;";
+		ENGINE=$engine";
 
 		return $create_structure;
 	}
@@ -56,7 +55,7 @@ class SchemaFactory
 			$alter_structure .= $datatype . $putComma;
 			$countCols++;
 		}
-		$alter_structure .= ";";
+		// $alter_structure .= ";";
 
 		return $alter_structure;
 	}
@@ -66,7 +65,7 @@ class SchemaFactory
 		$scaffold = "";
 		foreach ($cols as $from => $to) {
 			$scaffold .= "ALTER TABLE `$from` ";
-			$scaffold .= "RENAME TO `$to`;";
+			$scaffold .= "RENAME TO `$to`";
 		}
 		return $scaffold;
 	}
@@ -77,7 +76,7 @@ class SchemaFactory
 	 */
 	public function dropSchema($table)
 	{
-		return "DROP TABLE IF EXISTS `$table`;";
+		return "DROP TABLE IF EXISTS `$table`";
 	}
 
 	/**
@@ -87,8 +86,13 @@ class SchemaFactory
 	public function tableExist($table)
 	{
 		$database = $this->database;
-		$fetch = DB()->select("COUNT(TABLE_NAME) AS counted_rows", "INFORMATION_SCHEMA.TABLES", "TABLE_SCHEMA = '$database' AND TABLE_NAME = '$table'")->get();
-		return ($fetch['counted_rows'] > 0) ? 1 : 0;
+		$fetch = database()
+			->select("COUNT(TABLE_NAME) AS counted_rows")
+			->table("INFORMATION_SCHEMA.TABLES")
+			->where(["TABLE_SCHEMA" => $database, "TABLE_NAME" => $table])
+			->get();
+
+		return ($fetch->counted_rows > 0) ? 1 : 0;
 	}
 
 	/**
@@ -99,7 +103,7 @@ class SchemaFactory
 	public function dropTable($table)
 	{
 		$this->foreignKeyChecks();
-		DB()->query("DROP TABLE `$table`;");
+		database()->query("DROP TABLE `$table`")->exec();
 	}
 
 	/**
@@ -110,7 +114,7 @@ class SchemaFactory
 	public function dropIfExists($table)
 	{
 		$this->foreignKeyChecks();
-		DB()->query("DROP TABLE IF EXISTS `$table`;");
+		database()->query("DROP TABLE IF EXISTS `$table`")->exec();
 	}
 
 	/**
@@ -119,7 +123,7 @@ class SchemaFactory
 	 */
 	public function foreignKeyChecks()
 	{
-		DB()->query("SET FOREIGN_KEY_CHECKS=0;");
+		database()->query("SET FOREIGN_KEY_CHECKS=0")->exec();
 	}
 
 	/**
@@ -147,10 +151,15 @@ class SchemaFactory
 	{
 		$tables_arr = [];
 		$database = $this->database;
-		$loop_all_table = DB()->selectLoop("TABLE_NAME", "INFORMATION_SCHEMA.TABLES", "TABLE_SCHEMA = '$database' AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME ASC")->get();
+		$loop_all_table = database()
+			->select("TABLE_NAME")
+			->table("INFORMATION_SCHEMA.TABLES")
+			->where(["TABLE_SCHEMA" => $database, "TABLE_TYPE" => 'BASE TABLE'])
+			->orderBy("TABLE_NAME")
+			->getAll();
 		if (count($loop_all_table) > 0) {
 			foreach ($loop_all_table as $tbl) {
-				$tables_arr[] = $tbl['TABLE_NAME'];
+				$tables_arr[] = $tbl->TABLE_NAME;
 			}
 		}
 

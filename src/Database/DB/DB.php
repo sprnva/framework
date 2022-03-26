@@ -5,6 +5,7 @@ namespace App\Core\DB;
 use App\Core\App;
 use PDO;
 use PDOException;
+use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
 
 class DB implements DBInterface
 {
@@ -770,18 +771,18 @@ class DB implements DBInterface
      */
     public function error()
     {
-        if ($this->debug === true) {
-            if (php_sapi_name() === 'cli') {
-                die("Query: " . $this->query . PHP_EOL . "Error: " . $this->error . PHP_EOL);
-            }
+        // if ($this->debug === true) {
+        //     if (php_sapi_name() === 'cli') {
+        //         die("Query: " . $this->query . PHP_EOL . "Error: " . $this->error . PHP_EOL);
+        //     }
 
-            $msg = '<h1>Database Error</h1>';
-            $msg .= '<h4>Query: <em style="font-weight:normal;">"' . $this->query . '"</em></h4>';
-            $msg .= '<h4>Error: <em style="font-weight:normal;">' . $this->error . '</em></h4>';
-            die($msg);
-        }
+        //     $msg = '<h1>Database Error</h1>';
+        //     $msg .= '<h4>Query: <em style="font-weight:normal;">"' . $this->query . '"</em></h4>';
+        //     $msg .= '<h4>Error: <em style="font-weight:normal;">' . $this->error . '</em></h4>';
+        //     die($msg);
+        // }
 
-        throw new PDOException($this->error . '. (' . $this->query . ')');
+        throw new QueryBuilderException($this->error, new PDOException());
     }
 
     /**
@@ -1024,7 +1025,7 @@ class DB implements DBInterface
         $query = $this->pdo->exec($this->query);
         if ($query === false) {
             $this->error = $this->pdo->errorInfo()[2];
-            $this->error();
+            return $this->error;
         }
 
         return $query;

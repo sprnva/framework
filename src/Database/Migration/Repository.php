@@ -19,10 +19,10 @@ class MigrationRepository
 	public function getRan()
 	{
 		$completed = [];
-		$migrations = DB()->selectLoop("migrations", $this->table)->get();
+		$migrations = database()->select("migrations")->table($this->table)->getAll();
 		if (count($migrations) > 0) {
 			foreach ($migrations as $done) {
-				$completed[] = $done['migrations'];
+				$completed[] = $done->migrations;
 			}
 		}
 
@@ -38,10 +38,15 @@ class MigrationRepository
 	{
 		$migration_list = [];
 		$batch = $this->getLastBatchNumber();
-		$migrations = DB()->selectLoop("migrations", $this->table, "batch = '$batch' ORDER BY id DESC")->get();
+		$migrations = database()
+			->select("migrations")
+			->table($this->table)
+			->where("batch", $batch)
+			->orderBy("id DESC")
+			->getAll();
 		if (count($migrations) > 0) {
 			foreach ($migrations as $list) {
-				$migration_list[] = $list['migrations'];
+				$migration_list[] = $list->migrations;
 			}
 		}
 
@@ -58,17 +63,16 @@ class MigrationRepository
 		// migrations have actually run for the application. We'll create the
 		// table to hold the migration file's path as well as the batch ID.
 		$migration_table = $this->table;
-		$response = DB()->query("CREATE TABLE `$migration_table` (
+		$response = database()->query("CREATE TABLE `$migration_table` (
 			`id` INT(11) NOT NULL AUTO_INCREMENT,
 			`migrations` TEXT NOT NULL COLLATE 'latin1_swedish_ci',
 			`batch` INT(11) NOT NULL,
 			PRIMARY KEY (`id`) USING BTREE
 		)
 		COLLATE='latin1_swedish_ci'
-		ENGINE=InnoDB
-		;");
+		ENGINE=InnoDB")->exec();
 
-		return ($response) ? nl2br("Migration table created successfully.\n")
+		return ($response !== false) ? nl2br("Migration table created successfully.\n")
 			: nl2br("Error creating migration table.\n");
 	}
 
@@ -78,8 +82,13 @@ class MigrationRepository
 	 */
 	public function getLastBatchNumber()
 	{
-		$batch_num = DB()->select("batch", $this->table, "id > 0 ORDER BY batch DESC LIMIT 1")->get();
-		return ($batch_num) ? $batch_num['batch'] : 0;
+		$batch_num = database()
+			->select("batch")
+			->table($this->table)
+			->where("id", ">", "0")
+			->orderBy("batch DESC")
+			->get();
+		return ($batch_num) ? $batch_num->batch : 0;
 	}
 
 	/**
@@ -97,7 +106,9 @@ class MigrationRepository
 	 */
 	public function log($migration_name, $migration_batch)
 	{
-		DB()->insert($this->table, ['migrations' => $migration_name, 'batch' => $migration_batch]);
+		database()
+			->table($this->table)
+			->insert(['migrations' => $migration_name, 'batch' => $migration_batch]);
 	}
 
 	/**
@@ -106,7 +117,10 @@ class MigrationRepository
 	 */
 	public function delete($migration_name, $migration_batch)
 	{
-		DB()->delete($this->table, "migrations = '$migration_name' AND batch = '$migration_batch'");
+		database()
+			->table($this->table)
+			->where(["migrations" => $migration_name, "batch" => $migration_batch])
+			->delete();
 	}
 
 	/**

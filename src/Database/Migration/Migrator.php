@@ -79,8 +79,8 @@ class Migrator
 				$migration_name = $this->removeDotPhp($file);
 				$schema = $this->runUp($file);
 				if ($schema != "") {
-					$query_response = DB()->query($schema);
-					if ($query_response) {
+					$query_response = database()->query($schema)->exec();
+					if ($query_response !== false) {
 
 						// Once we have run a migrations file, we will log that it was run in this
 						// repository so that we don't try to run it next time we do a migration
@@ -91,7 +91,7 @@ class Migrator
 
 						// if the schema failed to execute against the database
 						$response .= nl2br("Failed: $migration_name\n");
-						$response .= nl2br("-- $query_response[error]\n");
+						$response .= nl2br("-- " . $query_response . "\n");
 					}
 				} else {
 
@@ -488,8 +488,8 @@ class Migrator
 				$migration_name = $this->removeDotPhp($file);
 				$schema = $this->runDown($file);
 				if ($schema != "") {
-					$query_response = DB()->query($schema);
-					if ($query_response) {
+					$query_response = database()->query($schema)->exec();
+					if ($query_response !== false) {
 
 						// Once we have run a migrations file, we remove migration to repository.
 						$this->repository->delete($migration_name, $migration_batch);
@@ -497,7 +497,7 @@ class Migrator
 					} else {
 
 						$response .= nl2br("Failed: $migration_name\n");
-						$response .= nl2br("-- $query_response[error]\n");
+						$response .= nl2br("-- " . $query_response . "\n");
 					}
 				} else {
 
