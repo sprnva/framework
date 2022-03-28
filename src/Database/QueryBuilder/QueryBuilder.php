@@ -4,11 +4,9 @@ namespace App\Core\Database\QueryBuilder;
 
 use PDO;
 use PDOException;
-use Exception;
 use App\Core\App;
 use App\Core\Filesystem\Filesystem;
 use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
-use RuntimeException;
 
 class QueryBuilder implements QueryBuilderInterface
 {
@@ -68,6 +66,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function __construct($pdo)
 	{
+		$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		$this->pdo = $pdo;
 	}
 
@@ -83,11 +82,13 @@ class QueryBuilder implements QueryBuilderInterface
 		try {
 			$this->querytype = 'select';
 			$inject = ($params == '') ? "" : "WHERE $params";
-			$statement = $this->pdo->prepare("SELECT {$columns} FROM {$table} {$inject}");
-			$statement->execute();
 			$this->queryStatement = "SELECT {$columns} FROM {$table} {$inject}";
-			$this->listen[] = "SELECT {$columns} FROM {$table} {$inject}";
-			$this->result = $statement->fetch(PDO::FETCH_ASSOC);
+			$this->result = json_decode(json_encode(database()
+				->query("SELECT {$columns} FROM {$table} {$inject}")
+				->fetch()), true);
+
+			$this->listen[] = database()->getQuery();
+
 			return $this;
 		} catch (PDOException $e) {
 			throw new QueryBuilderException($e->getMessage(), $e);
@@ -103,9 +104,9 @@ class QueryBuilder implements QueryBuilderInterface
 	{
 		$this->paginateStatement = "";
 		$inject = ($params == '') ? "" : "WHERE $params";
-		$test = "SELECT {$column} FROM {$table} {$inject}";
 		$this->querytype = "selectLoop";
-		$this->queryStatement = $test;
+		$this->queryStatement = "SELECT {$column} FROM {$table} {$inject}";
+		$this->listen[] = $this->queryStatement;
 		return $this;
 	}
 
@@ -115,17 +116,16 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function get()
 	{
-		if ($this->querytype == "selectLoop") {
+		if ($this->querytype === "selectLoop") {
 			try {
-
 				$query_statement = ($this->paginateStatement != "")
 					? $this->paginateStatement
 					: $this->queryStatement;
 
-				$statement = $this->pdo->prepare("{$query_statement}");
-				$statement->execute();
-				$this->listen[] = "{$query_statement}";
-				$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
+				$this->result = json_decode(json_encode(database()
+					->query($query_statement)
+					->fetchAll()), true);
+				$this->listen[] = database()->getQuery();
 				return $this->result;
 			} catch (PDOException $e) {
 				throw new QueryBuilderException($e->getMessage(), $e);
@@ -148,7 +148,7 @@ class QueryBuilder implements QueryBuilderInterface
 				? $this->paginateStatement
 				: $this->queryStatement;
 
-			$currentTableDatas = DB()->query($query_statement, 'Y')->get();
+			$currentTableDatas = json_decode(json_encode(database()->query($query_statement)->fetchAll()), true);
 		} else {
 			$currentTableDatas = $this->result;
 		}
@@ -172,15 +172,16 @@ class QueryBuilder implements QueryBuilderInterface
 			$relationPrimaryColumn = $primaryColumn[1];
 			$implodedIds = implode("','", array_unique($collectedIdFrom[$relationTable]));
 
-			$andFilter = (!empty($this->withFilter[$relationTable])) ? $this->withFilter[$relationTable] : '';
+			$andFilter = (!empty($this->withFilter[$relationTable]))
+				? $this->withFilter[$relationTable]
+				: '';
 
-			$statement = $this->pdo->prepare("SELECT * FROM `{$relationTable}` WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter}");
-			$statement->execute();
+			$query = database()->query("SELECT * FROM `{$relationTable}` WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter}")->fetchAll();
 
-			$this->listen[] = "SELECT * FROM `{$relationTable}` WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter}";
-			$relationDatas[$relationTable] = $statement->fetchAll(PDO::FETCH_ASSOC);
+			$this->listen[] = database()->getQuery();
+
+			$relationDatas[$relationTable] = json_decode(json_encode($query), true);
 		}
-
 
 		$newResultSet = [];
 		foreach ($currentTableDatas as $currentTableData) {
@@ -214,7 +215,6 @@ class QueryBuilder implements QueryBuilderInterface
 			}
 		}
 
-
 		$this->querytype = "with";
 		$this->result = $newResultSet;
 		return $this;
@@ -232,7 +232,7 @@ class QueryBuilder implements QueryBuilderInterface
 				? $this->paginateStatement
 				: $this->queryStatement;
 
-			$currentTableDatas = DB()->query($query_statement, 'Y')->get();
+			$currentTableDatas = json_decode(json_encode(database()->query($query_statement)->fetchAll()), true);
 		} else {
 			$currentTableDatas = $this->result;
 		}
@@ -258,12 +258,10 @@ class QueryBuilder implements QueryBuilderInterface
 
 			$andFilter = (!empty($this->withFilter[$relationTable])) ? $this->withFilter[$relationTable] : '';
 
-			$statement = $this->pdo->prepare("SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`");
-			$statement->execute();
+			$query = database()->query("SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`")->fetchAll();
 
-			$this->listen[] = "SELECT COUNT(*) as '{$relationTable}_count', `{$relationTable}`.`$relationPrimaryColumn` FROM `{$relationTable}`  WHERE `{$relationTable}`.`$relationPrimaryColumn` IN('$implodedIds') {$andFilter} GROUP BY `{$relationTable}`.`$relationPrimaryColumn`";
-
-			$relationDatas[$relationTable] = $statement->fetchAll(PDO::FETCH_ASSOC);
+			$this->listen[] = database()->getQuery();
+			$relationDatas[$relationTable] = json_decode(json_encode($query), true);
 		}
 
 		$newResultSet = [];
@@ -312,17 +310,12 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function insert($table_name, $form_data, $last_id = 'N')
 	{
-		$fields = array_keys($form_data);
-
-		$sql = "INSERT INTO " . $table_name . "(`" . implode('`,`', $fields) . "`) VALUES ('" . implode("','", $form_data) . "')";
-
 		try {
-			$statement = $this->pdo->prepare($sql);
-			$statement->execute();
+			$statement = database()->table($table_name)->insert($form_data);
+			$this->listen[] = database()->getQuery();
 
-			$this->listen[] = "INSERT INTO " . $table_name . "(`" . implode('`,`', $fields) . "`) VALUES ('" . implode("','", $form_data) . "')";
-			$lastID = $this->pdo->lastInsertId();
 			if ($last_id == 'Y') {
+				$lastID = database()->insertId();
 				if ($statement) {
 					return $lastID;
 				} else {
@@ -357,6 +350,7 @@ class QueryBuilder implements QueryBuilderInterface
 				$whereSQL = " " . trim($where_clause);
 			}
 		}
+
 		$sql = "UPDATE " . $table_name . " SET ";
 		$sets = array();
 		foreach ($form_data as $column => $value) {
@@ -366,12 +360,10 @@ class QueryBuilder implements QueryBuilderInterface
 		$sql .= $whereSQL;
 
 		try {
-			$statement = $this->pdo->prepare($sql);
-			$statement->execute();
+			$statement = database()->query($sql)->exec();
+			$this->listen[] = database()->getQuery();
 
-			$this->listen[] = $sql;
-
-			if ($statement) {
+			if ($statement !== false) {
 				return 1;
 			} else {
 				return 0;
@@ -401,12 +393,10 @@ class QueryBuilder implements QueryBuilderInterface
 		$sql = "DELETE FROM " . $table_name . $whereSQL;
 
 		try {
-			$statement = $this->pdo->prepare($sql);
-			$statement->execute();
+			$statement = database()->query($sql)->exec();
+			$this->listen[] = database()->getQuery();
 
-			$this->listen[] = $sql;
-
-			if ($statement) {
+			if ($statement !== false) {
 				return 1;
 			} else {
 				return 0;
@@ -425,13 +415,11 @@ class QueryBuilder implements QueryBuilderInterface
 	public function query($query, $fetch = "N")
 	{
 		try {
-			$statement = $this->pdo->prepare($query);
-			$statement->execute();
-
-			$this->listen[] = $query;
+			$statement = database()->query($query)->fetchAll();
+			$this->listen[] = database()->getQuery();
 
 			if ($fetch == "Y") {
-				$this->result = $statement->fetchAll(PDO::FETCH_ASSOC);
+				$this->result = $statement;
 				return $this;
 			} else {
 				if ($statement) {
@@ -486,6 +474,7 @@ class QueryBuilder implements QueryBuilderInterface
 		$this->paginateCurrentPage = $page;
 
 		$this->paginateStatement = $this->queryStatement . " LIMIT {$paginationStart}, {$limit}";
+		$this->listen[] = $this->paginateStatement;
 		return $this;
 	}
 
