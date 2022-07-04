@@ -20,9 +20,10 @@ class Auth
      * 
      * @param array $datas
      */
-    public static function authenticate($request)
+    public static function authenticate($request, $col = '')
     {
-        $datas = DB()->select("*", "users", "username = '$request[username]'")
+        $cols = ($col == '') ? 'username' : $col;
+        $datas = DB()->select("*", "users", "$cols = '$request[username]'")
             ->with([
                 "roles" => ['role_id', 'id']
             ])->get();

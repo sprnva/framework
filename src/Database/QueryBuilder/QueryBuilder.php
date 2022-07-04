@@ -190,19 +190,19 @@ class QueryBuilder implements QueryBuilderInterface
 				foreach ($relationDatas[$relationTable] as $key => $relationData) {
 					if (is_array($currentTableData)) {
 						if ($currentTableData[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
-							if ($countRelationData > 1) {
-								$currentTableData[$relationTable][] = $relationData;
-							} else {
-								$currentTableData[$relationTable] = $relationData;
-							}
+							// if ($countRelationData > 1) {
+							$currentTableData[$relationTable][] = $relationData;
+							// } else {
+							// 	$currentTableData[$relationTable] = $relationData;
+							// }
 						}
 					} else {
 						if ($currentTableDatas[$primaryColumn[0]] == $relationData[$primaryColumn[1]]) {
-							if ($countRelationData > 1) {
-								$currentTableDatas[$relationTable] = $relationDatas[$relationTable];
-							} else {
-								$currentTableDatas[$relationTable] = $relationData;
-							}
+							// if ($countRelationData > 1) {
+							$currentTableDatas[$relationTable] = $relationDatas[$relationTable];
+							// } else {
+							// 	$currentTableDatas[$relationTable] = $relationData;
+							// }
 						}
 					}
 				}
