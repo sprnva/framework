@@ -2,7 +2,7 @@
 ### /supernova/
 Sprnva is a beautifully designed application starter kit for you and provides the perfect starting point for your next application. Sprnva provides the entry point in learning the MVC framework.
 <br><br>
-docs: http://docs.sprnva.space
+docs: https://sprnva.gitbook.io/
 <br>
 Sprnva is designed using bootstrap 4 and offers your choice of using different stacks.
 ![image](https://user-images.githubusercontent.com/37282871/125870550-4bb3426e-a542-47cd-bdae-821c677ac489.png)
