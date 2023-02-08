@@ -120,7 +120,7 @@ class Blast
         $requestedURI = $_SERVER['REQUEST_URI'];
         $requestedfullUri = $_SERVER['SCRIPT_URI'];
         $fullURI = str_replace($requestedURI, '', $requestedfullUri);
-        $base_url = $fullURI; //'/' . App::get('config')['app']['base_url'];
+        $base_url = (App::get('config')['app']['base_url'] == "")? $fullURI : '/'. App::get('config')['app']['base_url'];
         $viewStub = Filesystem::get(__DIR__ . "/view/index.php");
         $icon = $base_url . '/vendor/sprnva/framework/src/Blast/assets/favicon.ico';
         $css = $base_url . '/vendor/sprnva/framework/src/Blast/assets/css/bootstrap.min.css';
