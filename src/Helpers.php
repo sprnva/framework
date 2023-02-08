@@ -26,7 +26,7 @@ Request::csrf_token();
  */
 function appversion()
 {
-    return "1.4.28";
+    return "1.4.29";
 }
 
 /**
